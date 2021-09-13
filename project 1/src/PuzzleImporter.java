@@ -12,12 +12,21 @@ public class PuzzleImporter {
             int j = 0;
             while(scanner.hasNext()){
                 String line = scanner.next();
-                line = line.replace('\r',' ');
+                line = line.replace('\r', ' ');
                 line = line.trim();
                 String[] spaces = line.split(",");
                 for(int k = 0; k < spaces.length; k++){
                     if (!spaces[k].contains("?")) {
-                    sudokuPuzzle[i][j] = Integer.parseInt(spaces[k]);
+                        // I was getting some weird errors when reading in the trimmed version of the
+                        // .csv file if the very first item was a number. Something to do with BOM chars?
+                        // What I did below fixed it
+                        // https://stackoverflow.com/questions/21891578/removing-bom-characters-using-java
+                        // https://stackoverflow.com/questions/40311348/numberformatexception-with-integer-parseint
+                        String UTF8_BOM = "\uFEFF";
+                        if (spaces[k].startsWith(UTF8_BOM)) {
+                            spaces[k] = spaces[k].substring(1);
+                        }
+                        sudokuPuzzle[i][j] = Integer.parseInt(spaces[k]);
                     }
                     j++;
                     if(j == 9){
