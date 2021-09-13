@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 public class PuzzleImporter {
         int[][] sudokuPuzzle = new int[9][9];
+        int[][] immutableValues = new int[9][9];
 
         public PuzzleImporter(String file) throws FileNotFoundException {
             Scanner scanner = new Scanner(new File(file));
@@ -27,6 +28,7 @@ public class PuzzleImporter {
                             spaces[k] = spaces[k].substring(1);
                         }
                         sudokuPuzzle[i][j] = Integer.parseInt(spaces[k]);
+                        immutableValues[i][j] = 1;
                     }
                     j++;
                     if(j == 9){
@@ -48,6 +50,14 @@ public class PuzzleImporter {
                     System.out.print(y + "  ");
                 }
                 System.out.print("\n");
+            }
+        }
+
+        public Boolean isLocked(int x, int y){
+            if(immutableValues[x][y] == 1){
+                return true;
+            }else{
+                return false;
             }
         }
 }
