@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 public class PuzzleImporter {
         int[][] sudokuPuzzle = new int[9][9];
+
         public PuzzleImporter(String file) throws FileNotFoundException {
             Scanner scanner = new Scanner(new File(file));
             scanner.useDelimiter("\n");
