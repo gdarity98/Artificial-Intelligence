@@ -1,8 +1,10 @@
 public abstract class ConstraintSolver {
     public PuzzleImporter puzzles[];
+    public String variation = "";
 
-    public ConstraintSolver(PuzzleImporter array[]){
+    public ConstraintSolver(PuzzleImporter array[], String variationName){
         puzzles = array;
+        variation = variationName;
     }
 
     public void validateColumn(int puzzleIndex, int x, int y){
