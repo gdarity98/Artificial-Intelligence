@@ -16,6 +16,7 @@ public class LocalSearch extends ConstraintSolver{
         }
     }
 
+    //TODO Need to figure out the randomization (how to make the next state)
     public PuzzleImporter simulatedAnnealing(PuzzleImporter puzzle){
         // need input of problem and schedule
         // current, next, T local variables
@@ -60,7 +61,7 @@ public class LocalSearch extends ConstraintSolver{
 //                randomNeighbor = random.nextInt(neighborsCurrent.length);
 //                next = neighborsCurrent[randomNeighbor];
 //            }
-
+//TODO THIS IS WHAT I NEED TO FIX
             int value = random.nextInt(9)+1;
             int[][] currBoard = puzzle.getSudokuPuzzle();
             int[][] nextBoard = new int[9][9];
@@ -107,7 +108,8 @@ public class LocalSearch extends ConstraintSolver{
                 double nextProb = Math.exp((double)deltaE / (k*(double)Tt));
                 double rDouble = random.nextDouble();
 
-
+//TODO ALSO FIX THIS
+                
 //                if( PROBABILTY CHOOSING ) {
 //                    int[][] board = puzzle.getSudokuPuzzle();
 //                    board[current[0]][current[1]] = board[next[0]][next[1]];
