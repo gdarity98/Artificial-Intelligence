@@ -1,7 +1,6 @@
 public class StateSpaceSearch extends ConstraintSolver{
 
-    public StateSpaceSearch(PuzzleImporter[] array) {
-        super(array);
+    public StateSpaceSearch(PuzzleImporter[] array, String variationName) {
+        super(array, variationName);
     }
-
 }
