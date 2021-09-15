@@ -135,4 +135,8 @@ public class PuzzleImporter {
         }
         return neighbors;
     }
+
+    public int[][] getCubeValues(){
+        return cubeValues;
+    }
 }
