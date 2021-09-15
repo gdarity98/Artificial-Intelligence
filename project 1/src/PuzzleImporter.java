@@ -44,6 +44,8 @@ public class PuzzleImporter {
             return sudokuPuzzle;
         }
 
+        public void setSudokuPuzzle(int[][] puzzle){ sudokuPuzzle = puzzle; }
+
         public void printSudokuPuzzle(){
             for(int[] x : sudokuPuzzle){
                 for(int y : x){
@@ -59,5 +61,9 @@ public class PuzzleImporter {
             }else{
                 return false;
             }
+        }
+
+        public void getNeighbors(int x, int y){
+            //idk if this is needed
         }
 }

@@ -19,4 +19,7 @@ public abstract class ConstraintSolver {
 
     }
 
+    public void initializePuzzle(PuzzleImporter puzzle){
+
+    };
 }
