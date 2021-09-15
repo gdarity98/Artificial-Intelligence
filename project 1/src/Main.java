@@ -27,6 +27,6 @@ public class Main {
             //System.out.println("");
         }
 
-        // LocalSearch ls = new LocalSearch(easyPuzzles, "simulatedAnnealing");
+        LocalSearch ls = new LocalSearch(easyPuzzles, "simulatedAnnealing");
     }
 }

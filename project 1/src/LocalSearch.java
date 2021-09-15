@@ -73,6 +73,10 @@ public class LocalSearch extends ConstraintSolver{
             }else{
                 //boltzmann probability (K tunable parameter)
                 //when temp is high we should always take the worst
+                // k is a tuned parameter. We are setting it to 1.
+                double k = 1;
+                double nextProb = Math.exp((double)deltaE / (k*(double)Tt));
+                double currentProb = 1 - nextProb;
             }
             //end if
         }
