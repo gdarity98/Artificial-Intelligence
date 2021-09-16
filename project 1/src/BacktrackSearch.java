@@ -3,7 +3,7 @@ import java.util.Scanner;
 public class BacktrackSearch {
 
 
-    public static int[][] BacktrackSearch(int[][] puzzleToSolve, int n) {
+    public static int[][] SimpleBacktrackSearch(int[][] puzzleToSolve, int n) {
         int row = -1;
         int column = -1;
         //Return when the end of the puzzle is reached
@@ -19,7 +19,7 @@ public class BacktrackSearch {
 
         //Skip the given values
         if (puzzleToSolve[row][column] != 0) {
-            return BacktrackSearch(puzzleToSolve, n);
+            return SimpleBacktrackSearch(puzzleToSolve, n);
         }
 
         //loop this to assign 1-9 or loop over whole puzzle N-queens style???
@@ -37,6 +37,5 @@ public class BacktrackSearch {
         //Constraints go here
         return true;
     }
-
 
 }
