@@ -147,7 +147,7 @@ public class LocalSearch extends ConstraintSolver{
                 puzzle.setSudokuPuzzle(currBoard);
                 return puzzle;
             }
-
+            //System.out.println(numConflictsCurr);
             int deltaE = numConflictsNext - numConflictsCurr;
 
             //if the next has neg energy then we take it (fewer conflicts)
@@ -223,8 +223,8 @@ public class LocalSearch extends ConstraintSolver{
 
     public int schedule(int t, int T0){
         int nt = t;
-        int tunedParameter = 1;
-        int Tt = ((T0*tunedParameter)/(tunedParameter + nt));
+        double tunedParameter = 1;
+        int Tt = (int)((T0*tunedParameter)/(tunedParameter + nt));
         return Tt;
     }
 }
