@@ -234,25 +234,45 @@ public class LocalSearch extends ConstraintSolver{
             //repeat k/2 times
             for(int times = 0; times < k/2; times+=2){
                 //pick two people in pop
-                //TODO   when picking need to make sure we did not pick the same board
-                //A1 := random_selection(Pop,T)
-                int[][] A1 = random_selection(population, Tt);
-                //A2 := random_selection(Pop,T)
-                int[][] A2 = random_selection(population,Tt);
+                //when picking need to make sure we did not pick the same board
+                Boolean sameA = true;
+                int[][] A1 = new int[9][9];
+                int[][] A2 = new int[9][9];
+                while(sameA){
+                    //A1 := random_selection(Pop,T)
+                    A1 = random_selection(population, Tt, puzzle);
+                    //A2 := random_selection(Pop,T)
+                    A2 = random_selection(population,Tt, puzzle);
+                    // as long as they are not at the same
+                    int numSame = 0;
+                    for(int x = 0; x< A1.length; x++) {
+                        for (int y = 0; y < A1[0].length; y++) {
+                            if(A1[x][y] == A2[x][y]){
+                                numSame++;
+                            }
+                        }
+                    }
+                    if(numSame != 81){
+                        sameA = false;
+                    }
+                }
 
                 //create two offspring
                 //N1, N2 := crossover(A1, A2)
-                int[][][] offspring = crossover(A1,A2);
+                int[][][] offspring = crossover(A1,A2, puzzle);
 
-                //new pop := Npop U {mutate(N1), mutate(N2)}
+                //new pop := new pop U {mutate(N1), mutate(N2)}
+                offspring[0] = mutate(offspring[0],puzzle);
+                offspring[1] = mutate(offspring[1],puzzle);
                 // add offspring to newPop
                 newPopulation[times] = offspring[0];
                 newPopulation[times+1] = offspring[1];
             }
             //Pop := new pop (generational replacement)
             population = newPopulation;
-            t++; //just t++ here or should I do it for every k/2 time?
-                 // (t is supposed to increase with every update performed)
+            t++; // (t is supposed to increase with every update performed)
+                 // t++ everytime a member of the population is changed or everytime population gets replaced???
+                 // currently, doing it everytime population gets replaced.
 
             //T is updated
             Tt = schedule(t, T0);
@@ -327,24 +347,92 @@ public class LocalSearch extends ConstraintSolver{
         return Tt;
     }
 
-    public int[][] random_selection(int[][][] population, int T){
-        //TODO tournament selection
+    public int[][] random_selection(int[][][] population, int T, PuzzleImporter puzzle){
+        // tournament selection
+        // add probability (same as SA) with no replacement, (DO WE NEED PROBABILITY? IDK)
+        // then make sure two chosen after that are not the same
         int[][] A = new int[9][9];
+        int[][] A1 = new int[9][9];
+        int[][] A2 = new int[9][9];
+        Random random = new Random();
+        // until A1 and A2 are not the same
+        while(A1[0] == A2[0] && A1[1] == A2[1]){
+            int value = random.nextInt(100)+1;
+            A1 = population[value];
+            value = random.nextInt(100)+1;
+            A2 = population[value];
+        }
+
+        // calculate conflicts on A1 and A2
+        puzzle.setSudokuPuzzle(A1);
+        puzzle.validateBoard();
+        int conflictsA1 = puzzle.getNumConflictsBoard();
+
+        puzzle.setSudokuPuzzle(A2);
+        puzzle.validateBoard();
+        int conflictsA2 = puzzle.getNumConflictsBoard();
+
+        //return the A with fewer conflicts (that is the A that won the tournament)
+        if(conflictsA1 < conflictsA2){
+            A = A1;
+        }else{
+            A= A2;
+        }
+
         return A;
     }
 
-    public int[][][] crossover(int[][] A1, int[][] A2){
-        //TODO one point crossover
+    public int[][][] crossover(int[][] A1, int[][] A2, PuzzleImporter puzzle){
+        //one point crossover
         int[][] N1 = new int[9][9];
         int[][] N2 = new int[9][9];
         int[][][] offspring = new int[2][9][9];
+
+        //pick random point to cross over at
+        Random random = new Random();
+        int valueRow = random.nextInt(9);
+        int valueCol = random.nextInt(9);
+        for(int i= 0; i< N1.length; i++){
+            for(int j = 0; j < N1[0].length;j++){
+                if(!puzzle.isLocked(i,j)){
+                    if(i == valueRow && j >= valueCol){
+                        N1[i][j] = A2[i][j];
+                        N2[i][j] = A1[i][j];
+                    }else if(i > valueRow){
+                        N1[i][j] = A2[i][j];
+                        N2[i][j] = A1[i][j];
+                    }else{
+                        N1[i][j] = A1[i][j];
+                        N2[i][j] = A2[i][j];
+                    }
+                }else{
+                    N1[i][j] = puzzle.getSudokuPuzzle()[i][j];
+                    N2[i][j] = puzzle.getSudokuPuzzle()[i][j];
+                }
+            }
+        }
+
         offspring[0] = N1;
         offspring[1] = N2;
         return offspring;
     }
 
-    public int[][] mutate(int[][] A){
-        //TODO some kind of mutate
+    public int[][] mutate(int[][] A, PuzzleImporter puzzle){
+        //Mutation Row
+        //picks a random row
+        Random random = new Random();
+        int valueRow = random.nextInt(9);
+        //randomize values in the row
+        for(int i= 0; i< A.length; i++) {
+            if(i == valueRow) {
+                for (int j = 0; j < A[0].length; j++) {
+                    if(!puzzle.isLocked(i,j)){
+                        int value = random.nextInt(9)+1;
+                        A[i][j] = value;
+                    }
+                }
+            }
+        }
         return A;
     }
 }
