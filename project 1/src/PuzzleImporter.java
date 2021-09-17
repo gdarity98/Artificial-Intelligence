@@ -6,6 +6,7 @@ public class PuzzleImporter {
     private int[][] sudokuPuzzle = new int[9][9];
     private int[][] immutableValues = new int[9][9];
     private int[][] cubeValues = new int[9][9];
+    private int numConflictsBoard = 0;
 
     public PuzzleImporter(String file) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(file));
@@ -136,7 +137,31 @@ public class PuzzleImporter {
         return neighbors;
     }
 
+    public int validateSpace(int x, int y){
+        int numConflicts = 0;
+        //get neighbors and check for same number
+        int[][] neighbors = getNeighbors(x,y);
+        int[][] board = getSudokuPuzzle();
+        for(int[] neighbor : neighbors){
+            if(board[neighbor[0]][neighbor[1]] == board[x][y]){
+                numConflicts++;
+            }
+        }
+        return numConflicts;
+    }
+
+    public void validateBoard(){
+        numConflictsBoard = 0;
+        for(int z = 0; z < sudokuPuzzle.length; z++){
+            for(int y = 0; y < sudokuPuzzle[0].length; y++){
+                numConflictsBoard += validateSpace(z, y);
+            }
+        }
+    }
+
     public int[][] getCubeValues(){
         return cubeValues;
     }
+
+    public int getNumConflictsBoard(){return numConflictsBoard;}
 }

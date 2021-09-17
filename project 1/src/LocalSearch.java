@@ -5,9 +5,10 @@ public class LocalSearch extends ConstraintSolver{
     public LocalSearch(PuzzleImporter[] array, String variationName) {
         super(array, variationName);
         if(variationName.equals("simulatedAnnealing")){
-            for(int i = 0; i < puzzles.length; i++){
-                puzzles[i] = simulatedAnnealing(puzzles[i]);
-            }
+            //for(int i = 0; i < puzzles.length; i++){
+                //puzzles[i] = simulatedAnnealing(puzzles[i]);
+            //}
+            puzzles[4] = simulatedAnnealing(puzzles[4]);
 
         }else if(variationName.equals("geneticAlgorithm")){
             geneticAlgorithm();
@@ -21,9 +22,10 @@ public class LocalSearch extends ConstraintSolver{
         // current, next, T local variables
         // int[] current = new int[2];
         // int[] next = new int[2];
-        int T0 = 1000000000; //I have no idea how this temp thing works rn
+        int T0 = 25000; //I have no idea how this temp thing works rn
+        // (250000 works, 100000 works better, 50,000?, 25,000 AMAZING, 600 breaks it, 700 breaks less often, 900 breaks it too but way less often)
         int Tt;
-
+        int t = 0;
         // I am initializing the board state
         initializePuzzle(puzzle);
 
@@ -31,7 +33,6 @@ public class LocalSearch extends ConstraintSolver{
         for(int i = 0; i < 1000000000; i ++) {
             //Set the Temperature for the iteration we are on
             //schedule slowly reduces the temp down to 0
-            int t = i;
             Tt = schedule(t, T0);
 
             //if temp = 0
@@ -54,12 +55,16 @@ public class LocalSearch extends ConstraintSolver{
             Random random = new Random();
             int chosenCube = random.nextInt(9);
             int x1 = 0;
-            int x2 = 0;
             int y1 = 0;
+            int x2 = 0;
             int y2 = 0;
             boolean locked = true;
-
+            int numTimesInWhile = 0;
             while((x1 == x2 && y1 == y2) || locked){
+                numTimesInWhile++;
+                if(numTimesInWhile > 5){
+                    chosenCube = random.nextInt(9);
+                }
                 switch(chosenCube){
                     case 0:
                         y1 = random.nextInt(3);
@@ -134,38 +139,40 @@ public class LocalSearch extends ConstraintSolver{
             //delta E: stands for energy (number of conflicts)
             int numConflictsNext = 0;
             int numConflictsCurr = 0;
+            puzzle.setSudokuPuzzle(nextBoard);
+            puzzle.validateBoard();
+            numConflictsNext = puzzle.getNumConflictsBoard();
+            puzzle.setSudokuPuzzle(currBoard);
+            puzzle.validateBoard();
+            numConflictsCurr = puzzle.getNumConflictsBoard();
 
-            for(int z = 0; z < currBoard.length; z++){
-                for(int y = 0; y < currBoard[0].length; y++){
-                    puzzle.setSudokuPuzzle(nextBoard);
-                    numConflictsNext += validateSpace(puzzle, z, y);
-                    puzzle.setSudokuPuzzle(currBoard);
-                    numConflictsCurr += validateSpace(puzzle, z, y);
-                }
-            }
             if(numConflictsCurr == 0){
                 puzzle.setSudokuPuzzle(currBoard);
+                // System.out.println("------------------------------FINISHED A BOARD-----------------------");
                 return puzzle;
             }
+
             //System.out.println(numConflictsCurr);
             int deltaE = numConflictsNext - numConflictsCurr;
 
             //if the next has neg energy then we take it (fewer conflicts)
-            if(deltaE < 0){
+            if(deltaE <= 0){
                 // board was already changed above
                 // current = next;
                 puzzle.setSudokuPuzzle(nextBoard);
+                t++;
             //else we may take it due to a probability
             }else{
                 //boltzmann probability (K tunable parameter)
                 //when temp is high we should always take the worst
                 // k is a tuned parameter. We are setting it to 1.
-                // I dont know how to take based on the probability
+                // I dont know if Im doing this right
                 double k = 1;
-                double nextProb = 1/(Math.exp((double)deltaE / (k*(double)Tt)));
+                double nextProb = 1 / (Math.exp(((double)deltaE / (k*(double)Tt))));
                 double rDouble = random.nextDouble();
                 if(rDouble < nextProb){
                     puzzle.setSudokuPuzzle(nextBoard);
+                    t++;
                 }else{
                     puzzle.setSudokuPuzzle(currBoard);
                 }
@@ -176,6 +183,7 @@ public class LocalSearch extends ConstraintSolver{
     }
 
     private void geneticAlgorithm() {
+
     }
 
     @Override
@@ -222,6 +230,7 @@ public class LocalSearch extends ConstraintSolver{
     }
 
     public int schedule(int t, int T0){
+        // not sure if this is right c:
         int nt = t;
         double tunedParameter = 1;
         int Tt = (int)((T0*tunedParameter)/(tunedParameter + nt));

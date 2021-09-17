@@ -26,7 +26,33 @@ public class Main {
             //evilPuzzles[i].printSudokuPuzzle();
             //System.out.println("");
         }
+//TODO Tune T0 in simulatedAnnealing to find solution to hard and evil boards (increase T0 probably)
+        LocalSearch lsEasy = new LocalSearch(easyPuzzles, "simulatedAnnealing");
+        System.out.println("LS SA - Easy Boards FINISHED");
+        System.out.println("Conflicts on Board");
+        for(PuzzleImporter puzzle : easyPuzzles){
+            System.out.println(puzzle.getNumConflictsBoard());
+        }
 
-        LocalSearch ls = new LocalSearch(easyPuzzles, "simulatedAnnealing");
+        LocalSearch lsMedium = new LocalSearch(medPuzzles, "simulatedAnnealing");
+        System.out.println("LS SA - Medium Boards FINISHED");
+        System.out.println("Conflicts on Board");
+        for(PuzzleImporter puzzle : medPuzzles){
+            System.out.println(puzzle.getNumConflictsBoard());
+        }
+
+        LocalSearch lsHard = new LocalSearch(hardPuzzles, "simulatedAnnealing");
+        System.out.println("LS SA - Hard Boards FINISHED");
+        System.out.println("Conflicts on Board");
+        for(PuzzleImporter puzzle : hardPuzzles){
+            System.out.println(puzzle.getNumConflictsBoard());
+        }
+
+        LocalSearch lsEvil = new LocalSearch(evilPuzzles, "simulatedAnnealing");
+        System.out.println("LS SA - Evil Boards FINISHED");
+        System.out.println("Conflicts on Board");
+        for(PuzzleImporter puzzle : evilPuzzles){
+            System.out.println(puzzle.getNumConflictsBoard());
+        }
     }
 }
