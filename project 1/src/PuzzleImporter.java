@@ -26,8 +26,8 @@ public class PuzzleImporter {
                     // https://stackoverflow.com/questions/21891578/removing-bom-characters-using-java
                     // https://stackoverflow.com/questions/40311348/numberformatexception-with-integer-parseint
                     String UTF8_BOM = "\uFEFF";
-                    if (spaces[k].startsWith(UTF8_BOM)) {
-                        spaces[k] = spaces[k].substring(1);
+                    if (spaces[k].startsWith("ï»¿")) {
+                        spaces[k] = spaces[k].substring(3);
                     }
                     sudokuPuzzle[i][j] = Integer.parseInt(spaces[k]);
                     immutableValues[i][j] = 1;
