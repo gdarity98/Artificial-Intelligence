@@ -7,7 +7,7 @@ public abstract class ConstraintSolver {
         variation = variationName;
     }
 
-    public void initializePuzzle(PuzzleImporter puzzle){
+    public void initializePuzzle(PuzzleImporter puzzle, String type){
 
     };
 }
