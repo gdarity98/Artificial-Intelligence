@@ -244,17 +244,7 @@ public class LocalSearch extends ConstraintSolver{
                     //A2 := random_selection(Pop,T)
                     A2 = random_selection(population,Tt, puzzle);
                     // as long as they are not at the same
-                    int numSame = 0;
-                    for(int x = 0; x< A1.length; x++) {
-                        for (int y = 0; y < A1[0].length; y++) {
-                            if(A1[x][y] == A2[x][y]){
-                                numSame++;
-                            }
-                        }
-                    }
-                    if(numSame != 81){
-                        sameA = false;
-                    }
+                    sameA = isSameA(A1, A2, sameA);
                 }
 
                 //create two offspring
@@ -270,6 +260,7 @@ public class LocalSearch extends ConstraintSolver{
             }
             //Pop := new pop (generational replacement)
             population = newPopulation;
+            //System.out.println("New Pop!");
             t++; // (t is supposed to increase with every update performed)
                  // t++ everytime a member of the population is changed or everytime population gets replaced???
                  // currently, doing it everytime population gets replaced.
@@ -356,11 +347,13 @@ public class LocalSearch extends ConstraintSolver{
         int[][] A2 = new int[9][9];
         Random random = new Random();
         // until A1 and A2 are not the same
-        while(A1[0] == A2[0] && A1[1] == A2[1]){
-            int value = random.nextInt(100)+1;
+        Boolean sameA = true;
+        while(sameA){
+            int value = random.nextInt(100);
             A1 = population[value];
-            value = random.nextInt(100)+1;
+            value = random.nextInt(100);
             A2 = population[value];
+            sameA = isSameA(A1, A2, sameA);
         }
 
         // calculate conflicts on A1 and A2
@@ -380,6 +373,21 @@ public class LocalSearch extends ConstraintSolver{
         }
 
         return A;
+    }
+
+    private Boolean isSameA(int[][] a1, int[][] a2, Boolean sameA) {
+        int numSame = 0;
+        for(int x = 0; x< a1.length; x++) {
+            for (int y = 0; y < a1[0].length; y++) {
+                if(a1[x][y] == a2[x][y]){
+                    numSame++;
+                }
+            }
+        }
+        if(numSame != 81){
+            sameA = false;
+        }
+        return sameA;
     }
 
     public int[][][] crossover(int[][] A1, int[][] A2, PuzzleImporter puzzle){
