@@ -8,9 +8,10 @@ public class LocalSearch extends ConstraintSolver{
             for(int i = 0; i < puzzles.length; i++){
                 puzzles[i] = simulatedAnnealing(puzzles[i]);
             }
-
         }else if(variationName.equals("geneticAlgorithm")){
-            geneticAlgorithm();
+            for(int i = 0; i < puzzles.length; i++){
+                puzzles[i] = geneticAlgorithm(puzzles[i]);
+            }
         }else{
             System.out.println("Variation does not exist");
         }
@@ -19,90 +20,331 @@ public class LocalSearch extends ConstraintSolver{
     public PuzzleImporter simulatedAnnealing(PuzzleImporter puzzle){
         // need input of problem and schedule
         // current, next, T local variables
-        int[] current = new int[2];
-        int[] next = new int[2];
-        int T0 = 1000000; //I have no idea how this temp thing works rn
+        // int[] current = new int[2];
+        // int[] next = new int[2];
+        int T0 = 25000;
+        // (250000 works, 100000 works better, 50,000?, 25,000 AMAZING, 600 breaks it, 700 breaks less often, 900 breaks it too but way less often)
         int Tt;
-
-        // I am initializing the puzzle
-        initializePuzzle(puzzle);
-
-        // initialize the current node with a random space we have
-        Random random = new Random();
-        int rowCurrent = random.nextInt(9);
-        int colCurrent = random.nextInt(9);
-        current[0] = rowCurrent;
-        current[1] = colCurrent;
+        int t = 0;
+        // I am initializing the board state
+        initializePuzzle(puzzle, "3x3Constrained");
 
         //for i until inf or until a set fitness or number of runs or something that stops the program
         for(int i = 0; i < 1000000000; i ++) {
-
             //Set the Temperature for the iteration we are on
             //schedule slowly reduces the temp down to 0
-            int t = i;
             Tt = schedule(t, T0);
 
             //if temp = 0
-            if(Tt == 0){
-                //   return current (idk if current is a space or a puzzle state lmfao)
-                //   idk whats happening big fun
+            if (Tt == 0) {
+                //   return current even if not completed
                 return puzzle;
             }
-            //end if
 
-            //next = random neighbor of current
-            // make sure the next value is not a locked one because we can't change that
-            int[][] neighborsCurrent = puzzle.getNeighbors(current[0], current[1]);
-            int randomNeighbor = random.nextInt(neighborsCurrent.length);
-            next = neighborsCurrent[randomNeighbor];
-            while(puzzle.isLocked(next[0], next[1])){
-                randomNeighbor = random.nextInt(neighborsCurrent.length);
-                next = neighborsCurrent[randomNeighbor];
+            // getting the current board and setting up the nextBoard state
+            int[][] currBoard = puzzle.getSudokuPuzzle();
+            int[][] nextBoard = new int[9][9];
+            for(int row = 0; row < nextBoard.length; row++){
+                for(int col = 0; col <nextBoard[0].length; col++){
+                    nextBoard[row][col] = currBoard[row][col];
+                }
             }
 
-            //delta E: stands for energy (number of conflicts)
-            int deltaE = validateSpace(puzzle, next[0], next[1]) - validateSpace(puzzle, current[0], current[1]);
+            //randomly select a 3*3 and then swap two values within that 3*3
+            Random random = new Random();
+            int chosenCube = random.nextInt(9);
+            int x1 = 0;
+            int y1 = 0;
+            int x2 = 0;
+            int y2 = 0;
+            boolean locked = true;
+            int numTimesInWhile = 0;
+            while((x1 == x2 && y1 == y2) || locked){
+                numTimesInWhile++;
+                if(numTimesInWhile > 5){
+                    chosenCube = random.nextInt(9);
+                }
+                switch(chosenCube){
+                    case 0:
+                        y1 = random.nextInt(3);
+                        y2 = random.nextInt(3);
+                        x1 = random.nextInt(3);
+                        x2 = random.nextInt(3);
+                        break;
+                    case 1:
+                        y1 = random.nextInt(3)+3;
+                        y2 = random.nextInt(3)+3;
+                        x1 = random.nextInt(3);
+                        x2 = random.nextInt(3);
+                        break;
+                    case 2:
+                        y1 = random.nextInt(3)+6;
+                        y2 = random.nextInt(3)+6;
+                        x1 = random.nextInt(3);
+                        x2 = random.nextInt(3);
+                        break;
+                    case 3:
+                        y1 = random.nextInt(3);
+                        y2 = random.nextInt(3);
+                        x1 = random.nextInt(3)+3;
+                        x2 = random.nextInt(3)+3;
+                        break;
+                    case 4:
+                        y1 = random.nextInt(3)+3;
+                        y2 = random.nextInt(3)+3;
+                        x1 = random.nextInt(3)+3;
+                        x2 = random.nextInt(3)+3;
+                        break;
+                    case 5:
+                        y1 = random.nextInt(3)+6;
+                        y2 = random.nextInt(3)+6;
+                        x1 = random.nextInt(3)+3;
+                        x2 = random.nextInt(3)+3;
+                        break;
+                    case 6:
+                        y1 = random.nextInt(3);
+                        y2 = random.nextInt(3);
+                        x1 = random.nextInt(3)+6;
+                        x2 = random.nextInt(3)+6;
+                        break;
+                    case 7:
+                        y1 = random.nextInt(3)+3;
+                        y2 = random.nextInt(3)+3;
+                        x1 = random.nextInt(3)+6;
+                        x2 = random.nextInt(3)+6;
+                        break;
+                    case 8:
+                        y1 = random.nextInt(3)+6;
+                        y2 = random.nextInt(3)+6;
+                        x1 = random.nextInt(3)+6;
+                        x2 = random.nextInt(3)+6;
+                        break;
+                    default:
+                        break;
+                }
+                if(!(puzzle.isLocked(x1,y1) || puzzle.isLocked(x2,y2))){
+                    locked = false;
+                }else{
+                    locked = true;
+                }
+            }
 
-            //if the next has neg energy then we take it (less conflicts)
-            if(deltaE < 0){
-                int[][] board = puzzle.getSudokuPuzzle();
-                board[current[0]][current[1]] = board[next[0]][next[1]];
-                puzzle.setSudokuPuzzle(board);
-                current = next;
+            int firstValue = nextBoard[x1][y1];
+            int secondValue = nextBoard[x2][y2];
+            nextBoard[x1][y1] = secondValue;
+            nextBoard[x2][y2] = firstValue;
+
+
+            //delta E: stands for energy (number of conflicts)
+            int numConflictsNext = 0;
+            int numConflictsCurr = 0;
+            puzzle.setSudokuPuzzle(nextBoard);
+            puzzle.validateBoard();
+            numConflictsNext = puzzle.getNumConflictsBoard();
+            puzzle.setSudokuPuzzle(currBoard);
+            puzzle.validateBoard();
+            numConflictsCurr = puzzle.getNumConflictsBoard();
+
+            if(numConflictsCurr == 0){
+                puzzle.setSudokuPuzzle(currBoard);
+                // System.out.println("------------------------------FINISHED A BOARD-----------------------");
+                return puzzle;
+            }
+
+            //System.out.println(numConflictsCurr);
+            int deltaE = numConflictsNext - numConflictsCurr;
+
+            //if the next has neg energy then we take it (fewer conflicts)
+            if(deltaE <= 0){
+                // board was already changed above
+                // current = next;
+                puzzle.setSudokuPuzzle(nextBoard);
+                t++;
             //else we may take it due to a probability
             }else{
                 //boltzmann probability (K tunable parameter)
                 //when temp is high we should always take the worst
+                // k is a tuned parameter. We are setting it to 1.
+                // I dont know if Im doing this right
+                double k = 1;
+                double nextProb = 1 / (Math.exp(((double)deltaE / (k*(double)Tt))));
+                double rDouble = random.nextDouble();
+                if(rDouble < nextProb){
+                    puzzle.setSudokuPuzzle(nextBoard);
+                    t++;
+                }else{
+                    puzzle.setSudokuPuzzle(currBoard);
+                }
             }
-            //end if
         }
-        //end for
         // This is just auto return after for loop if we end up not returning but leaving the for loop
         return puzzle;
     }
 
-    private void geneticAlgorithm() {
+    private PuzzleImporter geneticAlgorithm(PuzzleImporter puzzle) {
+        // population of puzzles
+        int[][][] population = new int[100][9][9];
+        // random assignments
+        for(int i = 0; i < population.length; i++){
+            int[][] newA = new int[9][9];
+            initializePuzzle(puzzle, "Random");
+            int[][] randomPuzzle = puzzle.getSudokuPuzzle();
+
+            for(int row = 0; row < newA.length; row++) {
+                for (int col = 0; col < newA[0].length; col++) {
+                    newA[row][col] = randomPuzzle[row][col];
+                }
+            }
+            population[i] = newA;
+        }
+
+        // Temp assigned a value according to schedule (same as simulatedAnnealing?)
+        int T0 = 25000;
+        // (250000 works, 100000 works better, 50,000?, 25,000 AMAZING, 600 breaks it, 700 breaks less often, 900 breaks it too but way less often)
+        int Tt;
+        int t = 0;
+        //Set the Temperature for the iteration we are on
+        //schedule slowly reduces the temp down to 0
+        Tt = schedule(t, T0);
+
+        //repeat
+        //for i until inf or until a set fitness or number of runs or something that stops the program
+        for(int i = 0; i < 1000000000; i ++) {
+            //if temp = 0
+            if (Tt == 0) {
+                //   return current even if not completed
+                return puzzle;
+            }
+            //if some A in Pop satisfies all constraints (has no conflicts) then return
+            for(int[][] A : population){
+                puzzle.setSudokuPuzzle(A);
+                puzzle.validateBoard();
+                int numConflictsA = puzzle.getNumConflictsBoard();
+                if(numConflictsA == 0){
+                    puzzle.setSudokuPuzzle(A);
+                    // System.out.println("------------------------------FINISHED A BOARD-----------------------");
+                    return puzzle;
+                }
+            }
+
+            //make a new empty pop
+            int[][][] newPopulation = new int[100][9][9];
+            int k=100; // set to population size and then making offspring to completely replace old pop
+                       //    could make it so fewer offspring are made and then do a different type of replacement.
+            //repeat k/2 times
+            for(int times = 0; times < k/2; times+=2){
+                //pick two people in pop
+                //TODO   when picking need to make sure we did not pick the same board
+                //A1 := random_selection(Pop,T)
+                int[][] A1 = random_selection(population, Tt);
+                //A2 := random_selection(Pop,T)
+                int[][] A2 = random_selection(population,Tt);
+
+                //create two offspring
+                //N1, N2 := crossover(A1, A2)
+                int[][][] offspring = crossover(A1,A2);
+
+                //new pop := Npop U {mutate(N1), mutate(N2)}
+                // add offspring to newPop
+                newPopulation[times] = offspring[0];
+                newPopulation[times+1] = offspring[1];
+            }
+            //Pop := new pop (generational replacement)
+            population = newPopulation;
+            t++; //just t++ here or should I do it for every k/2 time?
+                 // (t is supposed to increase with every update performed)
+
+            //T is updated
+            Tt = schedule(t, T0);
+
+        }
+        return puzzle;
     }
 
     @Override
-    public void initializePuzzle(PuzzleImporter puzzle) {
-        int[][] newPuzzle = puzzle.getSudokuPuzzle();
-        for(int row = 0; row < newPuzzle.length; row++){
-            for(int col = 0; col < newPuzzle[0].length; col++){
-                if(!puzzle.isLocked(row, col)){
-                    Random random = new Random();
-                    int value = random.nextInt(9)+1;
-                    newPuzzle[row][col] = value;
+    public void initializePuzzle(PuzzleImporter puzzle, String initializeType) {
+        if(initializeType.equals("3x3Constrained")){
+            int[][] newPuzzle = puzzle.getSudokuPuzzle();
+            int[][] cubeValues = puzzle.getCubeValues();
+            for(int row = 0; row < newPuzzle.length; row++){
+                for(int col = 0; col < newPuzzle[0].length; col++){
+                    //if this space is not locked
+                    if(!puzzle.isLocked(row, col)){
+                        //until we put in a number that doesn't already exist in the 3x3 cube
+                        Boolean alreadyExists = true;
+                        while(alreadyExists){
+                            //pick a random number
+                            Random random = new Random();
+                            int value = random.nextInt(9)+1;
+                            //put it in the new puzzle
+                            newPuzzle[row][col] = value;
+                            //find the values in the 3x3 cube by using the cubeValues map
+                            int exists = 0;
+                            for(int i = 0; i < newPuzzle.length; i++){
+                                for(int j = 0; j < newPuzzle[0].length; j++){
+                                    if(cubeValues[i][j] == cubeValues[row][col]){
+                                        //if the value is the same then it alreadyExists, and it is not looking at itself,
+                                        //    pick a new number
+                                        //otherwise done
+                                        if(!(i == row && j == col)){
+                                            if(value == newPuzzle[i][j]){
+                                                exists++;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if(exists == 0){
+                                alreadyExists = false;
+                            }
+                        }
+                    }
                 }
             }
+            puzzle.setSudokuPuzzle(newPuzzle);
+        }else if (initializeType.equals("Random")){
+            int[][] newPuzzle = puzzle.getSudokuPuzzle();
+            for(int row = 0; row < newPuzzle.length; row++) {
+                for (int col = 0; col < newPuzzle[0].length; col++) {
+                    //if this space is not locked set space to random value
+                    if (!puzzle.isLocked(row, col)) {
+                        Random random = new Random();
+                        int value = random.nextInt(9)+1;
+                        newPuzzle[row][col] = value;
+                    }
+                }
+            }
+            puzzle.setSudokuPuzzle(newPuzzle);
         }
-        puzzle.setSudokuPuzzle(newPuzzle);
     }
 
     public int schedule(int t, int T0){
+        // not sure if this is right c:
         int nt = t;
-        int tunedParameter = 1;
-        int Tt = ((T0*tunedParameter)/(tunedParameter + nt));
+        double tunedParameter = 1;
+        int Tt = (int)((T0*tunedParameter)/(tunedParameter + nt));
         return Tt;
+    }
+
+    public int[][] random_selection(int[][][] population, int T){
+        //TODO tournament selection
+        int[][] A = new int[9][9];
+        return A;
+    }
+
+    public int[][][] crossover(int[][] A1, int[][] A2){
+        //TODO one point crossover
+        int[][] N1 = new int[9][9];
+        int[][] N2 = new int[9][9];
+        int[][][] offspring = new int[2][9][9];
+        offspring[0] = N1;
+        offspring[1] = N2;
+        return offspring;
+    }
+
+    public int[][] mutate(int[][] A){
+        //TODO some kind of mutate
+        return A;
     }
 }
