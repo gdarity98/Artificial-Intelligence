@@ -11,9 +11,9 @@ public class Main {
 
         for (int i = 0; i < easyPuzzles.length; i++) {
             easyPuzzles[i] = new PuzzleImporter("project 1/sudoku puzzles/Easy-P" + (i + 1) + ".csv");
-            //System.out.println("Sudoku Puzzle Easy " + (i + 1));
-            //easyPuzzles[i].printSudokuPuzzle();
-            //System.out.println("");
+            System.out.println("Sudoku Puzzle Easy " + (i + 1));
+            easyPuzzles[i].printSudokuPuzzle();
+            System.out.println("");
             medPuzzles[i] = new PuzzleImporter("project 1/sudoku puzzles/Med-P" + (i + 1) + ".csv");
             //System.out.println("Sudoku Puzzle Medium " + (i+1));
             //medPuzzles[i].printSudokuPuzzle();
@@ -29,9 +29,9 @@ public class Main {
         }
         for (int i = 0; i < easyPuzzles.length; i++) {
             BacktrackSearch backtrackSearch = new BacktrackSearch();
-            System.out.println(backtrackSearch.ForwardCheck(evilPuzzles[i].getSudokuPuzzle(), evilPuzzles[i].getSudokuPuzzle().length));
+            System.out.println(backtrackSearch.SimpleBacktrackSearch(easyPuzzles[i].getSudokuPuzzle(), easyPuzzles[i].getSudokuPuzzle().length));
             System.out.println("Sudoku Puzzle Easy " + (i + 1));
-            evilPuzzles[i].printSudokuPuzzle();
+            easyPuzzles[i].printSudokuPuzzle();
             System.out.println("");
         }
 

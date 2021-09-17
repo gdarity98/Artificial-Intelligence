@@ -241,16 +241,4 @@ public class BacktrackSearch {
         //congrats, there are no restrictions
         return true;
     }
-
-//    public boolean forwardCheck(int[][] puzzleToSolve, int row, int column) {
-//        boolean hasLegalValue = true;
-//        for (int i = 0; i < puzzleToSolve.length; i++) {
-//            if (LegalValue(puzzleToSolve, row, column, i)) {
-//
-//            }
-//            for (int j = 0; j < puzzleToSolve[i].length; j++) {
-//
-//            }
-//        }
-//    }
 }
