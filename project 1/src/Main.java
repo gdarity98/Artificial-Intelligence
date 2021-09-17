@@ -28,8 +28,8 @@ public class Main {
             //System.out.println("");
         }
         for (int i = 0; i < easyPuzzles.length; i++) {
-            BacktrackSearch backtrackSearch = new BacktrackSearch(evilPuzzles[i].getSudokuPuzzle());
-            System.out.println(backtrackSearch.SimpleBacktrackSearch(evilPuzzles[i].getSudokuPuzzle(), evilPuzzles[i].getSudokuPuzzle().length));
+            BacktrackSearch backtrackSearch = new BacktrackSearch();
+            System.out.println(backtrackSearch.ForwardCheck(evilPuzzles[i].getSudokuPuzzle(), evilPuzzles[i].getSudokuPuzzle().length));
             System.out.println("Sudoku Puzzle Easy " + (i + 1));
             evilPuzzles[i].printSudokuPuzzle();
             System.out.println("");
