@@ -5,13 +5,13 @@ public class LocalSearch extends ConstraintSolver{
     public LocalSearch(PuzzleImporter[] array, String variationName) {
         super(array, variationName);
         if(variationName.equals("simulatedAnnealing")){
-            //for(int i = 0; i < puzzles.length; i++){
-                //puzzles[i] = simulatedAnnealing(puzzles[i]);
-            //}
-            puzzles[4] = simulatedAnnealing(puzzles[4]);
-
+            for(int i = 0; i < puzzles.length; i++){
+                puzzles[i] = simulatedAnnealing(puzzles[i]);
+            }
         }else if(variationName.equals("geneticAlgorithm")){
-            geneticAlgorithm();
+            for(int i = 0; i < puzzles.length; i++){
+                puzzles[i] = geneticAlgorithm(puzzles[i]);
+            }
         }else{
             System.out.println("Variation does not exist");
         }
@@ -22,7 +22,7 @@ public class LocalSearch extends ConstraintSolver{
         // current, next, T local variables
         // int[] current = new int[2];
         // int[] next = new int[2];
-        int T0 = 25000; //I have no idea how this temp thing works rn
+        int T0 = 25000;
         // (250000 works, 100000 works better, 50,000?, 25,000 AMAZING, 600 breaks it, 700 breaks less often, 900 breaks it too but way less often)
         int Tt;
         int t = 0;
@@ -182,8 +182,9 @@ public class LocalSearch extends ConstraintSolver{
         return puzzle;
     }
 
-    private void geneticAlgorithm() {
+    private PuzzleImporter geneticAlgorithm(PuzzleImporter puzzle) {
 
+        return puzzle;
     }
 
     @Override

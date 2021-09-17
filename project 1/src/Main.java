@@ -26,7 +26,9 @@ public class Main {
             //evilPuzzles[i].printSudokuPuzzle();
             //System.out.println("");
         }
-//TODO Tune T0 in simulatedAnnealing to find solution to hard and evil boards (increase T0 probably)
+
+//TODO Tune parameters simulatedAnnealing to find solution to hard and evil boards (increase T0 probably,
+// or increase in scheduling)
         LocalSearch lsEasy = new LocalSearch(easyPuzzles, "simulatedAnnealing");
         System.out.println("LS SA - Easy Boards FINISHED");
         System.out.println("Conflicts on Board");
