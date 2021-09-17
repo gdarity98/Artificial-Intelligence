@@ -259,9 +259,32 @@ public class LocalSearch extends ConstraintSolver{
                 //new pop := new pop U {mutate(N1), mutate(N2)}
                 offspring[0] = mutate(offspring[0],puzzle);
                 offspring[1] = mutate(offspring[1],puzzle);
-                // add offspring to newPop
-                newPopulation[numTimes] = offspring[0];
-                newPopulation[numTimes + 50] = offspring[1];
+
+                // add the best offspring and best parent to newPop
+                puzzle.setSudokuPuzzle(offspring[0]);
+                puzzle.validateBoard();
+                int numC1 = puzzle.getNumConflictsBoard();
+                puzzle.setSudokuPuzzle(offspring[1]);
+                puzzle.validateBoard();
+                int numC2 = puzzle.getNumConflictsBoard();
+                if(numC1 < numC2){
+                    newPopulation[numTimes] = offspring[0];
+                    newPopulation[numTimes + 50] = offspring[1];
+                }else{
+                    newPopulation[numTimes] = offspring[1];
+                }
+
+                puzzle.setSudokuPuzzle(A1);
+                puzzle.validateBoard();
+                numC1 = puzzle.getNumConflictsBoard();
+                puzzle.setSudokuPuzzle(A2);
+                puzzle.validateBoard();
+                numC2 = puzzle.getNumConflictsBoard();
+                if(numC1 < numC2){
+                    newPopulation[numTimes + 50] = A1;
+                }else{
+                    newPopulation[numTimes + 50] = A2;
+                }
             }
             //Pop := new pop (generational replacement)
             population = newPopulation;
