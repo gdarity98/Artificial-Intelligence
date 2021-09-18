@@ -26,7 +26,13 @@ public class Main {
             //evilPuzzles[i].printSudokuPuzzle();
             //System.out.println("");
         }
-
+        for (int i = 0; i < easyPuzzles.length; i++) {
+            BacktrackSearch backtrackSearch = new BacktrackSearch();
+            System.out.println(backtrackSearch.SimpleBacktrackSearch(easyPuzzles[i].getSudokuPuzzle(), easyPuzzles[i].getSudokuPuzzle().length));
+            System.out.println("Sudoku Puzzle Easy " + (i + 1));
+            easyPuzzles[i].printSudokuPuzzle();
+            System.out.println("");
+        }
 //TODO Tune parameters simulatedAnnealing to find solution to hard and evil boards (increase T0 probably,
 // or increase in scheduling)
 
