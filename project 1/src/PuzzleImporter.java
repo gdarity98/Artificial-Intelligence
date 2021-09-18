@@ -29,6 +29,9 @@ public class PuzzleImporter {
                     if (spaces[k].startsWith(UTF8_BOM)) {
                         spaces[k] = spaces[k].substring(1);
                     }
+                    if (spaces[k].startsWith("ï»¿")) {
+                        spaces[k] = spaces[k].substring(3);
+                    }
                     sudokuPuzzle[i][j] = Integer.parseInt(spaces[k]);
                     immutableValues[i][j] = 1;
                 }
