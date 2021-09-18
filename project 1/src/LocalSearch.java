@@ -221,26 +221,27 @@ public class LocalSearch extends ConstraintSolver{
                 puzzle.setSudokuPuzzle(A);
                 puzzle.validateBoard();
                 int numConflictsA = puzzle.getNumConflictsBoard();
-                System.out.println(numConflictsA);
+                //System.out.println(i+ " " + numConflictsA);
                 if(numConflictsA == 0){
                     puzzle.setSudokuPuzzle(A);
-                    // System.out.println("------------------------------FINISHED A BOARD-----------------------");
+                    System.out.println("------------------------------FINISHED A BOARD-----------------------");
                     return puzzle;
                 }
             }
 
-            //make a new empty pop
-            int[][][] newPopulation = new int[100][9][9];
             int k=100; // set to population size and then making offspring to completely replace old pop
-                       //    could make it so fewer offspring are made and then do a different type of replacement.
+            //    could make it so fewer offspring are made and then do a different type of replacement.
+            //make a new empty pop
+            int[][][] newPopulation = new int[k][9][9];
+
             //repeat k/2 times
-            for(int numTimes = 0; numTimes < k/2; numTimes++){
+            for(int numTimes = 0; numTimes < (k/2); numTimes++){
                 //pick two people in pop
                 //when picking need to make sure we did not pick the same board
                 Boolean sameA = true;
                 int[][] A1 = new int[9][9];
                 int[][] A2 = new int[9][9];
-                int[][][] used = new int[100][9][9];
+                int[][][] used = new int[k][9][9];
                 int usedIndex = 0;
                 while(sameA) {
                     //A1 := random_selection(Pop,T)
@@ -260,6 +261,10 @@ public class LocalSearch extends ConstraintSolver{
                 offspring[0] = mutate(offspring[0],puzzle);
                 offspring[1] = mutate(offspring[1],puzzle);
 
+                //add offspring
+//                newPopulation[numTimes] = offspring[0];
+//                newPopulation[numTimes + k/2] = offspring[1];
+                
                 // add the best offspring and best parent to newPop
                 puzzle.setSudokuPuzzle(offspring[0]);
                 puzzle.validateBoard();
@@ -269,7 +274,6 @@ public class LocalSearch extends ConstraintSolver{
                 int numC2 = puzzle.getNumConflictsBoard();
                 if(numC1 < numC2){
                     newPopulation[numTimes] = offspring[0];
-                    newPopulation[numTimes + 50] = offspring[1];
                 }else{
                     newPopulation[numTimes] = offspring[1];
                 }
@@ -281,9 +285,9 @@ public class LocalSearch extends ConstraintSolver{
                 puzzle.validateBoard();
                 numC2 = puzzle.getNumConflictsBoard();
                 if(numC1 < numC2){
-                    newPopulation[numTimes + 50] = A1;
+                    newPopulation[numTimes + k/2] = A1;
                 }else{
-                    newPopulation[numTimes + 50] = A2;
+                    newPopulation[numTimes + k/2] = A2;
                 }
             }
             //Pop := new pop (generational replacement)
@@ -378,9 +382,9 @@ public class LocalSearch extends ConstraintSolver{
         Boolean sameA = true;
         Boolean notUsed = true;
         while(sameA || notUsed){
-            int value = random.nextInt(100);
+            int value = random.nextInt(population.length);
             A1 = population[value];
-            value = random.nextInt(100);
+            value = random.nextInt(population.length);
             A2 = population[value];
             sameA = isSameA(A1, A2);
             for (int[][] used : usedInTournament){
@@ -472,12 +476,14 @@ public class LocalSearch extends ConstraintSolver{
         int y1 = 0;
         int x2 = 0;
         int y2 = 0;
+
         Random random = new Random();
         while((x1 == x2 && y1 == y2) || locked){
             y1 = random.nextInt(9);
             y2 = random.nextInt(9);
             x1 = random.nextInt(9);
             x2 = random.nextInt(9);
+
             if(!(puzzle.isLocked(x1,y1) || puzzle.isLocked(x2,y2))){
                 locked = false;
             }else{
@@ -490,5 +496,23 @@ public class LocalSearch extends ConstraintSolver{
         A[x1][y1] = secondValue;
         A[x2][y2] = firstValue;
         return A;
+
+        //Mutation Row
+        //picks a random row
+//        Random random = new Random();
+//        int valueRow = random.nextInt(9);
+//        //randomize values in the row
+//        for(int i= 0; i< A.length; i++) {
+//            if(i == valueRow) {
+//                for (int j = 0; j < A[0].length; j++) {
+//                    if(!puzzle.isLocked(i,j)){
+//                        int value = random.nextInt(9)+1;
+//                        A[i][j] = value;
+//                    }
+//                }
+//            }
+//        }
+//        return A;
     }
+
 }
