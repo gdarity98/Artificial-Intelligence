@@ -75,8 +75,8 @@ public class Main {
                     domains[d][j] = j+1;
             }
 
-            int[][] immutableValues = easyPuzzles[1].getImmutableValues();
-            int[][] aPuzzle = easyPuzzles[1].getSudokuPuzzle();
+            int[][] immutableValues = easyPuzzles[i].getImmutableValues();
+            int[][] aPuzzle = easyPuzzles[i].getSudokuPuzzle();
             for(int j = 0; j < immutableValues.length; j++){
                 for(int k = 0; k< immutableValues[0].length; k++){
                     if (immutableValues[j][k] == 1){
@@ -86,7 +86,7 @@ public class Main {
                             }
                         }
                         int[][] neighborDomains = new int[20][9];
-                        int[][] neighbors = easyPuzzles[1].getNeighbors(j,k);
+                        int[][] neighbors = easyPuzzles[i].getNeighbors(j,k);
                         int count = 0;
                         for(int m= 0; m < domains.length; m++) {
                             for (int[] neighbor : neighbors) {
