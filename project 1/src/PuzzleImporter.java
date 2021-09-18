@@ -164,4 +164,8 @@ public class PuzzleImporter {
     }
 
     public int getNumConflictsBoard(){return numConflictsBoard;}
+
+    public int[][] getImmutableValues() {
+        return immutableValues;
+    }
 }
