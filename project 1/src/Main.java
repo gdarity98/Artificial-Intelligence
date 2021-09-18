@@ -33,6 +33,7 @@ public class Main {
             easyPuzzles[i].printSudokuPuzzle();
             System.out.println("");
         }
+        
 //TODO Tune parameters simulatedAnnealing to find solution to hard and evil boards (increase T0 probably,
 // or increase in scheduling)
 
