@@ -199,8 +199,8 @@ public class LocalSearch extends ConstraintSolver{
         }
 
         // Temp assigned a value according to schedule (same as simulatedAnnealing?)
-        int T0 = 25000;
-        // (250000 works, 100000 works better, 50,000?, 25,000 AMAZING, 600 breaks it, 700 breaks less often, 900 breaks it too but way less often)
+        int T0 = 5000;
+        // (5000 seemed to do better... just tuned for easy)
         int Tt;
         int t = 0;
         //Set the Temperature for the iteration we are on
@@ -229,7 +229,7 @@ public class LocalSearch extends ConstraintSolver{
                 }
             }
 
-            int k=100; // set to population size and then making offspring to completely replace old pop
+            int k=200; // set to population size and then making offspring to completely replace old pop
             //    could make it so fewer offspring are made and then do a different type of replacement.
             //make a new empty pop
             int[][][] newPopulation = new int[k][9][9];
@@ -299,7 +299,6 @@ public class LocalSearch extends ConstraintSolver{
 
             //T is updated
             Tt = schedule(t, T0);
-
         }
         return puzzle;
     }
@@ -410,12 +409,32 @@ public class LocalSearch extends ConstraintSolver{
         int conflictsA2 = puzzle.getNumConflictsBoard();
 
         //return the A with fewer conflicts (that is the A that won the tournament)
-        if(conflictsA1 < conflictsA2){
+        // added a probability to let worse options in
+        double prob = 0;
+        double rDouble = random.nextDouble();
+        if(conflictsA1 == 0){
             A = A1;
+            return A;
+        }else if(conflictsA2 == 0){
+            A = A2;
+            return A;
+        }else if(conflictsA1 < conflictsA2){
+            prob = 1 / (Math.exp(((double)(conflictsA2-conflictsA1) / ((double)T))));
         }else{
-            A= A2;
+            prob = 1 / (Math.exp(((double)(conflictsA1-conflictsA2) / ((double)T))));
         }
 
+        if(conflictsA1 <= conflictsA2){
+            A = A1;
+            if(rDouble <= prob){
+                A = A2;
+            }
+        }else{
+            A= A2;
+            if(rDouble <= prob){
+                A = A1;
+            }
+        }
         return A;
     }
 
@@ -444,6 +463,9 @@ public class LocalSearch extends ConstraintSolver{
         Random random = new Random();
         int valueRow = random.nextInt(9);
         int valueCol = random.nextInt(9);
+//        int valueRow = 4;
+//        int valueCol = 5;
+
         for(int i= 0; i< N1.length; i++){
             for(int j = 0; j < N1[0].length;j++){
                 if(!puzzle.isLocked(i,j)){
@@ -472,12 +494,14 @@ public class LocalSearch extends ConstraintSolver{
     public int[][] mutate(int[][] A, PuzzleImporter puzzle){
         //Mutation swap
         boolean locked = true;
+//        boolean noConflict = true;
         int x1 = 0;
         int y1 = 0;
         int x2 = 0;
         int y2 = 0;
 
         Random random = new Random();
+//        while((x1 == x2 && y1 == y2) || locked || noConflict){
         while((x1 == x2 && y1 == y2) || locked){
             y1 = random.nextInt(9);
             y2 = random.nextInt(9);
@@ -489,6 +513,11 @@ public class LocalSearch extends ConstraintSolver{
             }else{
                 locked = true;
             }
+//            if(!(puzzle.validateSpace(x1,y1) > 0 || puzzle.validateSpace(x2,y2) > 0)){
+//                noConflict = true;
+//            }else{
+//                noConflict = false;
+//            }
         }
 
         int firstValue = A[x1][y1];
