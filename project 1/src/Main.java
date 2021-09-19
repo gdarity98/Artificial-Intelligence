@@ -27,13 +27,9 @@ public class Main {
             //System.out.println("");
         }
 
-//        for (int i = 0; i < easyPuzzles.length; i++) {
-//            BacktrackSearch backtrackSearch = new BacktrackSearch(easyPuzzles[i]);
-//            System.out.println(backtrackSearch.SimpleBacktrackSearch(easyPuzzles[i].getSudokuPuzzle(), easyPuzzles[i].getSudokuPuzzle().length));
-//            System.out.println("Sudoku Puzzle Easy " + (i + 1));
-//            easyPuzzles[i].printSudokuPuzzle();
-//            System.out.println("");
-//        }
+        StateSpaceSearch SSS_SBEasy = new StateSpaceSearch(easyPuzzles, "simpleBacktracking");
+        StateSpaceSearch SSS_FCEasy = new StateSpaceSearch(easyPuzzles, "forwardChecking");
+        StateSpaceSearch SSS_ACEasy = new StateSpaceSearch(easyPuzzles, "arcConsistency");
 
 //TODO Tune parameters simulatedAnnealing to find solution to hard and evil boards (increase T0 probably,
 // or increase in scheduling)
@@ -67,49 +63,5 @@ public class Main {
 //        }
 
         //LocalSearch lsEasy = new LocalSearch(easyPuzzles, "geneticAlgorithm");
-
-        for (int i = 0; i < easyPuzzles.length; i++) {
-            int[][] domains = new int[81][9];
-            for(int d= 0; d < domains.length; d++){
-                for(int j = 0; j < domains[0].length; j++)
-                    domains[d][j] = j+1;
-            }
-
-            int[][] immutableValues = easyPuzzles[i].getImmutableValues();
-            int[][] aPuzzle = easyPuzzles[i].getSudokuPuzzle();
-            for(int j = 0; j < immutableValues.length; j++){
-                for(int k = 0; k< immutableValues[0].length; k++){
-                    if (immutableValues[j][k] == 1){
-                        for(int z = 0; z < domains[0].length; z++){
-                            if(z+1 == aPuzzle[j][k]){
-                                domains[(((j)*9) + (k))][z] = 0;
-                            }
-                        }
-                        int[][] neighborDomains = new int[20][9];
-                        int[][] neighbors = easyPuzzles[i].getNeighbors(j,k);
-                        int count = 0;
-                        for(int m= 0; m < domains.length; m++) {
-                            for (int[] neighbor : neighbors) {
-                                if(i+1 == ((neighbor[0])*9) + (neighbor[1]+1)){
-                                    for (int z = 0; z < domains[0].length; z++) {
-                                        if(domains[m][z] == aPuzzle[j][k]){
-                                            domains[m][z] = 0;
-                                            break;
-                                        }
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-
-                    }
-                }
-            }
-            BacktrackSearch backtrackSearch = new BacktrackSearch(easyPuzzles[i]);
-            System.out.println(backtrackSearch.ArcConsistency(easyPuzzles[i].getSudokuPuzzle(), easyPuzzles[i].getSudokuPuzzle().length,domains));
-            System.out.println("Sudoku Puzzle Easy " + (i + 1));
-            easyPuzzles[i].printSudokuPuzzle();
-            System.out.println("");
-        }
     }
 }
