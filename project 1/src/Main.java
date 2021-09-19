@@ -61,7 +61,7 @@ public class Main {
 //        for(PuzzleImporter puzzle : evilPuzzles){
 //            System.out.println(puzzle.getNumConflictsBoard());
 //        }
-
-        //LocalSearch lsEasy = new LocalSearch(easyPuzzles, "geneticAlgorithm");
+        //10:14 -
+        LocalSearch lsEasy = new LocalSearch(easyPuzzles, "geneticAlgorithm");
     }
 }
