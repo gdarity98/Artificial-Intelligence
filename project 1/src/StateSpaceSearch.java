@@ -219,6 +219,7 @@ public class StateSpaceSearch extends ConstraintSolver{
             }
         }
 
+        //Look to see that there is at least one legal value
         for (int i = 0; i < puzzleToSolve.length; i++) {
             for (int j = 1; j < 10; j++) {
                 if (LegalValue(puzzleToSolve, row, i, j)) {
@@ -240,6 +241,7 @@ public class StateSpaceSearch extends ConstraintSolver{
             }
         }
 
+        //Look to see that there is at least one legal value
         for (int i = 0; i < puzzleToSolve.length; i++) {
             for (int j = 1; j < 10; j++) {
                 if (LegalValue(puzzleToSolve, i, column, j)) {
@@ -285,6 +287,7 @@ public class StateSpaceSearch extends ConstraintSolver{
             }
         }
 
+        //Check to see that there is at least one possible answer in each square
         for (int i = boxRow; i < boxRow + 3; i++) {
             for (int j = 0; j < boxColumn + 3; j++) {
                 for (int k = 1; k < 10; k++) {
@@ -295,6 +298,8 @@ public class StateSpaceSearch extends ConstraintSolver{
             }
         }
 
+        //If there is at least one solution move on
+        //If no values then backtrack
         if (countRemainingValues == 0) {
             return false;
         } else {
