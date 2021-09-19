@@ -221,7 +221,7 @@ public class LocalSearch extends ConstraintSolver{
                 puzzle.setSudokuPuzzle(A);
                 puzzle.validateBoard();
                 int numConflictsA = puzzle.getNumConflictsBoard();
-                //System.out.println(i+ " " + numConflictsA);
+                System.out.println(i+ " " + numConflictsA);
                 if(numConflictsA == 0){
                     puzzle.setSudokuPuzzle(A);
                     System.out.println("------------------------------FINISHED A BOARD-----------------------");
@@ -229,7 +229,7 @@ public class LocalSearch extends ConstraintSolver{
                 }
             }
 
-            int k=200; // set to population size and then making offspring to completely replace old pop
+            int k=100; // set to population size and then making offspring to completely replace old pop
             //    could make it so fewer offspring are made and then do a different type of replacement.
             //make a new empty pop
             int[][][] newPopulation = new int[k][9][9];
