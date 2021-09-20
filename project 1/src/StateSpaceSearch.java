@@ -101,6 +101,7 @@ public class StateSpaceSearch extends ConstraintSolver{
         for (int i = 0; i <= n; i++) {
             if (LegalValue(puzzleToSolve, row, column, i)) {
                 puzzleToSolve[row][column] = i;
+                tracker++;
                 if (SimpleBacktrackSearch(puzzleToSolve, n)) {
                     return true;
                 } else {
@@ -196,6 +197,7 @@ public class StateSpaceSearch extends ConstraintSolver{
         for (int i = 0; i <= n; i++) {
             if (LegalForwardValue(puzzleToSolve, row, column, i)) {
                 puzzleToSolve[row][column] = i;
+                tracker++;
                 if (ForwardCheck(puzzleToSolve, n)) {
                     return true;
                 } else {
@@ -401,6 +403,7 @@ public class StateSpaceSearch extends ConstraintSolver{
             int[][] newDomains = LegalConsistentValue(puzzleToSolve, row, column, i, domains);
             if(legal) {
                 puzzleToSolve[row][column] = i;
+                tracker++;
                 if (ArcConsistency(puzzleToSolve, n, newDomains)) {
                     return true;
                 } else {

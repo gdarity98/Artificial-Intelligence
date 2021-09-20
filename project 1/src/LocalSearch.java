@@ -160,6 +160,7 @@ public class LocalSearch extends ConstraintSolver{
                 // current = next;
                 puzzle.setSudokuPuzzle(nextBoard);
                 t++;
+                tracker++;
             //else we may take it due to a probability
             }else{
                 //boltzmann probability (K tunable parameter)
@@ -172,6 +173,7 @@ public class LocalSearch extends ConstraintSolver{
                 if(rDouble < nextProb){
                     puzzle.setSudokuPuzzle(nextBoard);
                     t++;
+                    tracker++;
                 }else{
                     puzzle.setSudokuPuzzle(currBoard);
                 }
@@ -296,6 +298,7 @@ public class LocalSearch extends ConstraintSolver{
             t++; // (t is supposed to increase with every update performed)
                  // t++ everytime a member of the population is changed or everytime population gets replaced???
                  // currently, doing it everytime population gets replaced.
+            tracker++;
 
             //T is updated
             Tt = schedule(t, T0);
