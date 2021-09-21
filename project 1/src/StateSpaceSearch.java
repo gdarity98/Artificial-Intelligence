@@ -6,17 +6,17 @@ public class StateSpaceSearch extends ConstraintSolver{
         super(array, variationName);
         if(variationName.equals("simpleBacktracking")){
             for(int i = 0; i < puzzles.length; i++){
-                System.out.println(SimpleBacktrackSearch(puzzles[i].getSudokuPuzzle(), puzzles[i].getSudokuPuzzle().length));
-                System.out.println("Sudoku Puzzle SB " + (i + 1));
-                puzzles[i].printSudokuPuzzle();
-                System.out.println("");
+                SimpleBacktrackSearch(puzzles[i].getSudokuPuzzle(), puzzles[i].getSudokuPuzzle().length);
+                //System.out.println("Sudoku Puzzle SB " + (i + 1));
+                //puzzles[i].printSudokuPuzzle();
+                //System.out.println("");
             }
         }else if(variationName.equals("forwardChecking")){
             for(int i = 0; i < puzzles.length; i++){
-                System.out.println(ForwardCheck(puzzles[i].getSudokuPuzzle(), puzzles[i].getSudokuPuzzle().length));
-                System.out.println("Sudoku Puzzle FC " + (i + 1));
-                puzzles[i].printSudokuPuzzle();
-                System.out.println("");
+                ForwardCheck(puzzles[i].getSudokuPuzzle(), puzzles[i].getSudokuPuzzle().length);
+//                System.out.println("Sudoku Puzzle FC " + (i + 1));
+//                puzzles[i].printSudokuPuzzle();
+//                System.out.println("");
             }
         }else if(variationName.equals("arcConsistency")){
             for(int i = 0; i < puzzles.length; i++){
@@ -59,10 +59,10 @@ public class StateSpaceSearch extends ConstraintSolver{
                     }
                 }
                 //running arcConsistency with initial domain
-                System.out.println(ArcConsistency(puzzles[i].getSudokuPuzzle(),puzzles[i].getSudokuPuzzle().length,domains));
-                System.out.println("Sudoku Puzzle AC " + (i + 1));
-                puzzles[i].printSudokuPuzzle();
-                System.out.println("");
+                ArcConsistency(puzzles[i].getSudokuPuzzle(),puzzles[i].getSudokuPuzzle().length,domains);
+                //System.out.println("Sudoku Puzzle AC " + (i + 1));
+                //puzzles[i].printSudokuPuzzle();
+                //System.out.println("");
             }
         }else{
             System.out.println("Variation does not exist");
@@ -75,6 +75,7 @@ public class StateSpaceSearch extends ConstraintSolver{
         int column = -1;
         //assume that we are done
         boolean empty = true;
+        //tracker++;
 
         //for every square we check for a value
         for (int i = 0; i < n; i++) {
@@ -112,10 +113,10 @@ public class StateSpaceSearch extends ConstraintSolver{
         return false;
     }
 
-    private static boolean LegalValue(int[][] puzzleToSolve, int row, int column, int possibleValue) {
+    private boolean LegalValue(int[][] puzzleToSolve, int row, int column, int possibleValue) {
         int boxRow = 0;
         int boxColumn = 0;
-
+        //tracker++;
         //check each row for a duplicate value
         for (int i = 0; i < puzzleToSolve.length; i++) {
             if (puzzleToSolve[row][i] == possibleValue) {
@@ -171,6 +172,7 @@ public class StateSpaceSearch extends ConstraintSolver{
         int column = -1;
         //assume that we are done
         boolean empty = true;
+        //tracker++;
 
         //for every square we check for a value
         for (int i = 0; i < n; i++) {
@@ -195,6 +197,7 @@ public class StateSpaceSearch extends ConstraintSolver{
 
         //check the value fits constraints then recursive calls to the next cell
         for (int i = 0; i <= n; i++) {
+            //tracker++;
             if (LegalForwardValue(puzzleToSolve, row, column, i)) {
                 puzzleToSolve[row][column] = i;
                 tracker++;
@@ -208,11 +211,12 @@ public class StateSpaceSearch extends ConstraintSolver{
         return false;
     }
 
-    private static boolean LegalForwardValue(int[][] puzzleToSolve, int row, int column, int possibleValue) {
+    private boolean LegalForwardValue(int[][] puzzleToSolve, int row, int column, int possibleValue) {
         int boxRow = 0;
         int boxColumn = 0;
         boolean hasValuesRemaining;
         int countRemainingValues = 0;
+        //tracker++;
 
         //check each row for a duplicate value
         for (int i = 0; i < puzzleToSolve.length; i++) {
@@ -401,9 +405,10 @@ public class StateSpaceSearch extends ConstraintSolver{
             }
 
             int[][] newDomains = LegalConsistentValue(puzzleToSolve, row, column, i, domains);
+            tracker++;
             if(legal) {
                 puzzleToSolve[row][column] = i;
-                tracker++;
+                //tracker++;
                 if (ArcConsistency(puzzleToSolve, n, newDomains)) {
                     return true;
                 } else {

@@ -11,4 +11,12 @@ public abstract class ConstraintSolver {
     public void initializePuzzle(PuzzleImporter puzzle, String type){
 
     };
+
+    public int getTracker() {
+        return tracker;
+    }
+
+    public void setTracker(int tracker) {
+        this.tracker = tracker;
+    }
 }
