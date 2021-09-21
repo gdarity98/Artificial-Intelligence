@@ -211,7 +211,7 @@ public class LocalSearch extends ConstraintSolver{
 
         //repeat
         //for i until inf or until a set fitness or number of runs or something that stops the program
-        for(int i = 0; i < 1000000000; i ++) {
+        for(int i = 0; i < 5000; i ++) {
             //if temp = 0
             if (Tt == 0) {
                 //   return current even if not completed
