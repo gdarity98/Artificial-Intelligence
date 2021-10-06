@@ -3,6 +3,8 @@ import java.util.Random;
 public class World {
     private String[][] filledWorld;
     private int[] playerPosition; // row , column
+    private String playerDirection = "East";
+    private int arrows = 0;
     private int size = 0;
     private int cellsExplored = 0;
     private int wumpusKilled = 0;
@@ -17,14 +19,14 @@ public class World {
         filledWorld = new String[size][size];
 
         // get the probabilities
-        double pPit = prob[0];
-        double pObstacle = prob[0] + prob[1];
-        double pWumpus = prob[0] + prob[1] + prob[2];
+        double pPit = (double) Math.round((prob[0])*100) / 100;
+        double pObstacle = (double) Math.round((prob[0] + prob[1])*100) / 100;
+        double pWumpus = (double) Math.round((prob[0] + prob[1] + prob[2])*100) / 100;
 
         //keep track of number of empty spaces, so we can randomly place gold and explorer
         int numEmpty = 0;
 
-        //
+        //setting the spaces to empty, pit, obstacle, or wumpus based on probability
         for(int i = 0; i < filledWorld.length; i++){
             for(int j = 0; j < filledWorld[0].length; j++){
                 double rDouble = random.nextDouble();
@@ -37,6 +39,7 @@ public class World {
                 }else if(rDouble < pWumpus){
                     //space is a Wumpus
                     filledWorld[i][j] = "W";
+                    arrows++;
                 }else{
                     //space is empty
                     filledWorld[i][j] = "_";
@@ -58,22 +61,29 @@ public class World {
         // update where the player is positioned
         // also update that the starting space is safe
         numEmpty = 0;
-        for(int i = 0; i < filledWorld.length; i++) {
-            for (int j = 0; j < filledWorld[0].length; j++) {
-                if(filledWorld[i][j].equals("_")){
-                    numEmpty++;
-                    if(numEmpty == rEmptyGold){
-                        filledWorld[i][j] = "G";
-                    }else if(numEmpty == rEmptyPlayer){
-                        playerPosition = new int[2];
-                        playerPosition[0] = i;
-                        playerPosition[1] = j;
-                    }
+        boolean goldPlaced = false;
+        boolean playerPlaced = false;
+        int rowGP = 0; //row counter for gold and player placing
+        int colGP = 0; //col counter for gold and player placing
+        while(!(playerPlaced && goldPlaced)){
+            if(filledWorld[rowGP][colGP].equals("_")){
+                numEmpty++;
+                if(numEmpty == rEmptyGold){
+                    filledWorld[rowGP][colGP] = "G";
+                    goldPlaced = true;
+                }else if(numEmpty == rEmptyPlayer){
+                    playerPosition = new int[2];
+                    playerPosition[0] = rowGP;
+                    playerPosition[1] = colGP;
+                    playerPlaced = true;
                 }
             }
+            colGP++;
+            if(colGP == filledWorld[0].length){
+                colGP = 0;
+                rowGP++;
+            }
         }
-
-
     }
 
     public String[][] getFilledWorld() {
@@ -126,6 +136,14 @@ public class World {
 
     public void setWumpusKilled(int wumpusKilled) {
         this.wumpusKilled = wumpusKilled;
+    }
+
+    public int getArrows() {
+        return arrows;
+    }
+
+    public void setArrows(int arrows) {
+        this.arrows = arrows;
     }
 
     // More methods
