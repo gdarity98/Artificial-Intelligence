@@ -13,7 +13,7 @@ public class ResolutionBased {
 
         // call resolution based search method
         // update rules
-        
+            // within resolution going to need unification and stuff like that
         // make choice based on rules
         // if one safe then choose safe, if several safe choose randomly,
         //   if no safe then choose randomly
