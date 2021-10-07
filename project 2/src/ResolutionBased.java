@@ -24,6 +24,7 @@ public class ResolutionBased {
     public void runGame(int size, double[] prob){
         world = new World(size, prob);
 
+        //Reasoning System Explorer
         //set up game
         safe = new int[world.getFilledWorld().length][world.getFilledWorld()[0].length];
         frontier = new int[world.getFilledWorld().length][world.getFilledWorld()[0].length];
@@ -35,7 +36,7 @@ public class ResolutionBased {
         frontier[startingPos[0]][startingPos[1]] = 0;
         playerPosition = startingPos;
 
-        //call functions to smell, hear, look, etc.
+        //need to smell wumpus, feel wind, see shimmer
         // get a rule based on that
 
         // call resolution based search method
@@ -44,10 +45,17 @@ public class ResolutionBased {
         // make choice based on rules
         // if one safe then choose safe, if several safe choose randomly,
         //   if no safe then choose randomly
+        //if smell wumpus chose unexplored cell and shoot to make safe, if you hear no scream go that way
+        //    if you do hear a scream go other way?
 
         //if death
         //   make new world of same size and run game again on new world
         //   reset updatedRules to be ""
+
+        //Reactive Explorer
+        //  we need to also make this!!!
+        //  should run on same world
+        //  stats contained separately for comparison
     }
 
     public int getCellsExplored() {
