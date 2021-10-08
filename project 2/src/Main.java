@@ -17,6 +17,7 @@ public class Main {
         p[2] = 0.15;
 
         //creating rules and game
+        //TODO NEED TO MAKE BASE RULES
         String rules = "Rule1, Rule2, Rule3";
         ResolutionBased game = new ResolutionBased(rules);
 

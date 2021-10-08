@@ -6,6 +6,8 @@ public class ResolutionBased {
     private int[][] safe; //is this the same as visited?: 1 is safe 0 is unsafe (set as 2 for discovered obstacle?)
     private int[][] frontier; //unexplored:  1 is unexplored 0 is explored
     private int[] playerPosition = new int[2];
+    private int playerDirection;
+    private int points = 0;
 
     //world information
     private World world;
@@ -33,18 +35,20 @@ public class ResolutionBased {
         }
 
         //where explorer is immediately add that to safe and remove from frontier
-        int[] startingPos = world.getPlayerPosition();
+        int[] startingPos = world.getPlayerStartingPosition();
         safe[startingPos[0]][startingPos[1]] = 1;
         frontier[startingPos[0]][startingPos[1]] = 0;
         playerPosition = startingPos;
+        playerDirection = world.getPlayerStartingDirection();
 
+        //index 0 = north, 1 = east, 2 = south, 3 = west
         int[][] surroundingSpaces = getSurrounding();
         boolean notDead = true;
         while(notDead){
             //need to smell wumpus, feel wind, see shimmer
-            boolean[] senses = Sense(surroundingSpaces);
+            boolean[] senses = sense(surroundingSpaces);
             System.out.println(senses);
-            // get a rule based on that
+            //TODO get a rule based on the senses to send into reasoning?
             //if smell, then there exists a wumpus in the surroundingSpaces
             //if feel, then there exists a pit in the surroundingSpaces
             //if shimmer, then there exists a gold in the surroundingSpaces
@@ -54,30 +58,134 @@ public class ResolutionBased {
             //if not shimmer, then there does not exists a gold in the surroundingSpaces
             //if not(shimmer and smell and feel), then the surroundingSpaces are safe
 
-            // call resolution based search method
+            //TODO call resolution based search method
                 // should be able to find existing rules that would make things safe?
                 // update rules
                 // within resolution going to need unification and stuff like that
 
-            // make choice based on rules
-                // move
+                //IDK about this part
+                // if one safe then choose safe, if several safe choose randomly,
+                //   if no safe then choose randomly
+                //if smell wumpus chose unexplored cell and shoot to make safe, if you hear no scream go that way
+                //    if you do hear a scream go other way?
 
-            //IDK about this part
-            // if one safe then choose safe, if several safe choose randomly,
-            //   if no safe then choose randomly
-            //if smell wumpus chose unexplored cell and shoot to make safe, if you hear no scream go that way
-            //    if you do hear a scream go other way?
+            //TODO make choice based on rules
+
+            // move choice
+            int[] destSpace = new int[2];
+            //example movement choice for testing
+            destSpace = surroundingSpaces[0];
+            playerPosition = move(destSpace, 0);
+            // (you won't move to a new space if destSpace was an obstacle or dead wumpus)
+
+            //after moving check if the space you are on is safe
+            // if it is a pit or wumpus you are dead, if it is gold teleport out
+            if(world.getFilledWorld()[playerPosition[0]][playerPosition[1]].equals("W")){
+                points -= 10000;
+                notDead = false;
+                continue;
+            }else if(world.getFilledWorld()[playerPosition[0]][playerPosition[1]].equals("P")){
+                points -= 10000;
+                notDead = false;
+                continue;
+            }else if(world.getFilledWorld()[playerPosition[0]][playerPosition[1]].equals("G")){
+                points += 1000;
+                //teleport to safety
+                break;
+            }else{
+                safe[playerPosition[0]][playerPosition[1]] = 1;
+                frontier[playerPosition[0]][playerPosition[1]] = 0;
+            }
+
+            //TODO shoot function
+            //have outline in function
+            boolean scream = shoot(playerPosition,playerDirection);
+
+            //TODO Keep track of stats (add [stat]++ where needed)
         }
 
+        //TODO death = new game
+        //if died from the above game then need to
+            //   make new world of same size
+            //   reset updatedRules to be ""
+            //   run game again on new world (call function again so that stats stay)
+
+        //TODO reactive explorer
+        //NEED TO FIGURE OUT WHERE TO DO THIS AT THE SAME TIME
+        // (Have another explorer updating separately in the above while loop and has its own death
+        // and gold found booleans?)
         //while not dead
-            //Reactive Explorer
-            //  we need to also make this!!!
-            //  should run on same world
-            //  stats contained separately for comparison
+        //Reactive Explorer
+        //  we need to also make this!!!
+        //  should run on same world
+        //  stats contained separately for comparison
 
-        //   make new world of same size and run game again on new world
-        //   reset updatedRules to be ""
+    }
 
+    //returns if you heard a scream or not
+    private boolean shoot(int[] playerPosition, int playerDirection) {
+        //check each space to direction facing for a wumpus or obstacle or border(end of array)
+        if(playerDirection == 0){//if player direction is 0 then need to decrease playerPosition[0] until <=/==/idk 0 lol
+            //if find obstacle first then return false
+            //if find wumpus first then return true
+            //if find end of array first then return false
+            return true;
+        }else if(playerDirection == 2){//if player direction is 2 then need to increase playPos[0] until 4
+            //if find obstacle first then return false
+            //if find wumpus first then return true
+            //if find end of array first then return false
+            return true;
+        }else if(playerDirection == 3){//if player direction is 3 then need to decrease playPos[1] until 0
+            //if find obstacle first then return false
+            //if find wumpus first then return true
+            //if find end of array first then return false
+            return true;
+        }else{ //if player direction is 1 then need to increase playPos[1] until 4
+            //if find obstacle first then return false
+            //if find wumpus first then return true
+            //if find end of array first then return false
+            return true;
+        }
+    }
+
+    private int[] move(int[] destSpace, int destDirection) {
+        // need to add cost
+        // facing the direction we need to be
+        if(playerDirection == destDirection){
+            //lose a point for moving forward
+            //check if next space is obstacle
+            if(world.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")){
+                points -= 1;
+                return playerPosition;
+            }else{
+                points -= 1;
+                return destSpace;
+            }
+        // need to turn 180 degrees
+        }else if(Math.abs(playerDirection - destDirection) == 2){
+            // lose two points for turning
+            points -= 2;
+            playerDirection = destDirection;
+            //lose a point for moving forward
+            if(world.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")){
+                points -= 1;
+                return playerPosition;
+            }else{
+                points -= 1;
+                return destSpace;
+            }
+        // need to turn 90 degrees
+        }else{
+            points -= 1;
+            playerDirection = destDirection;
+            if(world.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")){
+                points -= 1;
+                return playerPosition;
+            }else{
+                points -= 1;
+                return destSpace;
+            }
+        }
     }
 
     private int[][] getSurrounding() {
@@ -166,7 +274,7 @@ public class ResolutionBased {
         return directions;
     }
 
-    private boolean[] Sense(int[][] surroundingSpaces) {
+    private boolean[] sense(int[][] surroundingSpaces) {
         //Smell, Feel, Shimmer
         boolean[] senses = new boolean[3];
 
