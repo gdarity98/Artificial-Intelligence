@@ -3,7 +3,7 @@ import java.util.Arrays;
 public class ResolutionBased {
     private String updatedRules = "";
     private String rules = "";
-    private int[][] safe; //is this the same as visited?: 1 is safe 0 is unsafe
+    private int[][] safe; //is this the same as visited?: 1 is safe 0 is unsafe (set as 2 for discovered obstacle?)
     private int[][] frontier; //unexplored:  1 is unexplored 0 is explored
     private int[] playerPosition = new int[2];
 
@@ -38,19 +38,36 @@ public class ResolutionBased {
         frontier[startingPos[0]][startingPos[1]] = 0;
         playerPosition = startingPos;
 
-        //While not dead
+        int[][] surroundingSpaces = getSurrounding();
+        boolean notDead = true;
+        while(notDead){
             //need to smell wumpus, feel wind, see shimmer
-            boolean[] sense = Sense();
+            boolean[] senses = Sense(surroundingSpaces);
+            System.out.println(senses);
             // get a rule based on that
+            //if smell, then there exists a wumpus in the surroundingSpaces
+            //if feel, then there exists a pit in the surroundingSpaces
+            //if shimmer, then there exists a gold in the surroundingSpaces
+
+            //if not smell, then there does not exists a wumpus in the surroundingSpaces
+            //if not feel, then there does not exists a pit in the surroundingSpaces
+            //if not shimmer, then there does not exists a gold in the surroundingSpaces
+            //if not(shimmer and smell and feel), then the surroundingSpaces are safe
 
             // call resolution based search method
-            // update rules
+                // should be able to find existing rules that would make things safe?
+                // update rules
                 // within resolution going to need unification and stuff like that
+
             // make choice based on rules
+                // move
+
+            //IDK about this part
             // if one safe then choose safe, if several safe choose randomly,
             //   if no safe then choose randomly
             //if smell wumpus chose unexplored cell and shoot to make safe, if you hear no scream go that way
             //    if you do hear a scream go other way?
+        }
 
         //while not dead
             //Reactive Explorer
@@ -63,11 +80,10 @@ public class ResolutionBased {
 
     }
 
-    private boolean[] Sense() {
-        //Smell, Feel, Shimmer
-        boolean[] senses = new boolean[3];
+    private int[][] getSurrounding() {
         int pRow = playerPosition[0];
         int pCol = playerPosition[1];
+
         int[] north = new int[2];
         int[] east = new int[2];
         int[] south = new int[2];
@@ -103,7 +119,7 @@ public class ResolutionBased {
                 west[0] = pRow;
                 west[1] = pCol-1;
             }
-        //if the player is top or bottom row
+            //if the player is top or bottom row
         }else if(pRow == 0 || pRow == 4){
             if(pRow == 0){
                 south[0] = pRow+1;
@@ -116,7 +132,7 @@ public class ResolutionBased {
             east[1] = pCol+1;
             west[0] = pRow;
             west[1] = pCol-1;
-        //if the player is in the far left or far right col
+            //if the player is in the far left or far right col
         }else if(pCol == 0 || pCol == 4){
             if(pCol == 0){
                 east[0] = pRow;
@@ -129,7 +145,7 @@ public class ResolutionBased {
             north[1] = pCol;
             south[0] = pRow+1;
             south[1] = pCol;
-        //if the player is anywhere else
+            //if the player is anywhere else
         }else{
             north[0] = pRow-1;
             north[1] = pCol;
@@ -147,15 +163,22 @@ public class ResolutionBased {
         directions[2] = south;
         directions[3] = west;
 
+        return directions;
+    }
+
+    private boolean[] Sense(int[][] surroundingSpaces) {
+        //Smell, Feel, Shimmer
+        boolean[] senses = new boolean[3];
+
         //check each direction for wumpus, gold, pit
-        for(int[] direction : directions){
-            if(direction[0] != 100){
-                String space = world.getFilledWorld()[direction[0]][direction[1]];
-                if(space.equals("G")){
+        for(int[] space : surroundingSpaces){
+            if(space[0] != 100){
+                String s = world.getFilledWorld()[space[0]][space[1]];
+                if(s.equals("G")){
                     senses[2] = true;
-                }else if(space.equals("P")){
+                }else if(s.equals("P")){
                     senses[1] = true;
-                }else if(space.equals("W")){
+                }else if(s.equals("W")){
                     senses[0] = true;
                 }
             }
