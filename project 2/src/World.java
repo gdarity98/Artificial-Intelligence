@@ -3,7 +3,8 @@ import java.util.Random;
 public class World {
     private String[][] filledWorld;
     private int[] playerStartingPosition; // row , column
-    private int arrows = 0;
+    private int startingArrows = 0;
+    private int playerStartingDirection = 1; //0 north, 1 east, 2 south, 3 west
 
     public World(int size, double[] prob){
         Random random = new Random();
@@ -32,7 +33,7 @@ public class World {
                 }else if(rDouble < pWumpus){
                     //space is a Wumpus
                     filledWorld[i][j] = "W";
-                    arrows++;
+                    startingArrows++;
                 }else{
                     //space is empty
                     filledWorld[i][j] = "_";
@@ -83,21 +84,16 @@ public class World {
         return filledWorld;
     }
 
-    public int[] getPlayerPosition() {
+    public int[] getPlayerStartingPosition() {
         return playerStartingPosition;
     }
 
-    public void setPlayerPosition(int[] playerPosition) {
-        this.playerStartingPosition = playerPosition;
+    public int getPlayerStartingDirection() {
+        return playerStartingDirection;
     }
 
-    public int getArrows() {
-        return arrows;
+    public int getStartingArrows() {
+        return startingArrows;
     }
 
-    public void setArrows(int arrows) {
-        this.arrows = arrows;
-    }
-
-    // More methods
 }
