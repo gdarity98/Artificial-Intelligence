@@ -1,51 +1,51 @@
-public class StateSpaceSearch extends ConstraintSolver{
+public class StateSpaceSearch extends ConstraintSolver {
     int[][] puzzleToSolve;
     private PuzzleImporter puzzle;
 
     public StateSpaceSearch(PuzzleImporter[] array, String variationName) {
         super(array, variationName);
-        if(variationName.equals("simpleBacktracking")){
-            for(int i = 0; i < puzzles.length; i++){
+        if (variationName.equals("simpleBacktracking")) {
+            for (int i = 0; i < puzzles.length; i++) {
                 SimpleBacktrackSearch(puzzles[i].getSudokuPuzzle(), puzzles[i].getSudokuPuzzle().length);
                 //System.out.println("Sudoku Puzzle SB " + (i + 1));
                 //puzzles[i].printSudokuPuzzle();
                 //System.out.println("");
             }
-        }else if(variationName.equals("forwardChecking")){
-            for(int i = 0; i < puzzles.length; i++){
+        } else if (variationName.equals("forwardChecking")) {
+            for (int i = 0; i < puzzles.length; i++) {
                 ForwardCheck(puzzles[i].getSudokuPuzzle(), puzzles[i].getSudokuPuzzle().length);
 //                System.out.println("Sudoku Puzzle FC " + (i + 1));
 //                puzzles[i].printSudokuPuzzle();
 //                System.out.println("");
             }
-        }else if(variationName.equals("arcConsistency")){
-            for(int i = 0; i < puzzles.length; i++){
+        } else if (variationName.equals("arcConsistency")) {
+            for (int i = 0; i < puzzles.length; i++) {
                 puzzle = puzzles[i];
                 //setting up initial domain
                 int[][] domains = new int[81][9];
-                for(int d= 0; d < domains.length; d++){
-                    for(int j = 0; j < domains[0].length; j++)
-                        domains[d][j] = j+1;
+                for (int d = 0; d < domains.length; d++) {
+                    for (int j = 0; j < domains[0].length; j++)
+                        domains[d][j] = j + 1;
                 }
 
                 int[][] immutableValues = puzzles[i].getImmutableValues();
                 int[][] aPuzzle = puzzles[i].getSudokuPuzzle();
-                for(int j = 0; j < immutableValues.length; j++){
-                    for(int k = 0; k< immutableValues[0].length; k++){
-                        if (immutableValues[j][k] == 1){
-                            for(int z = 0; z < domains[0].length; z++){
-                                if(z+1 == aPuzzle[j][k]){
-                                    domains[(((j)*9) + (k))][z] = 0;
+                for (int j = 0; j < immutableValues.length; j++) {
+                    for (int k = 0; k < immutableValues[0].length; k++) {
+                        if (immutableValues[j][k] == 1) {
+                            for (int z = 0; z < domains[0].length; z++) {
+                                if (z + 1 == aPuzzle[j][k]) {
+                                    domains[(((j) * 9) + (k))][z] = 0;
                                 }
                             }
                             int[][] neighborDomains = new int[20][9];
-                            int[][] neighbors = puzzles[i].getNeighbors(j,k);
+                            int[][] neighbors = puzzles[i].getNeighbors(j, k);
                             int count = 0;
-                            for(int m= 0; m < domains.length; m++) {
+                            for (int m = 0; m < domains.length; m++) {
                                 for (int[] neighbor : neighbors) {
-                                    if(i+1 == ((neighbor[0])*9) + (neighbor[1]+1)){
+                                    if (i + 1 == ((neighbor[0]) * 9) + (neighbor[1] + 1)) {
                                         for (int z = 0; z < domains[0].length; z++) {
-                                            if(domains[m][z] == aPuzzle[j][k]){
+                                            if (domains[m][z] == aPuzzle[j][k]) {
                                                 domains[m][z] = 0;
                                                 break;
                                             }
@@ -59,12 +59,12 @@ public class StateSpaceSearch extends ConstraintSolver{
                     }
                 }
                 //running arcConsistency with initial domain
-                ArcConsistency(puzzles[i].getSudokuPuzzle(),puzzles[i].getSudokuPuzzle().length,domains);
+                ArcConsistency(puzzles[i].getSudokuPuzzle(), puzzles[i].getSudokuPuzzle().length, domains);
                 //System.out.println("Sudoku Puzzle AC " + (i + 1));
                 //puzzles[i].printSudokuPuzzle();
                 //System.out.println("");
             }
-        }else{
+        } else {
             System.out.println("Variation does not exist");
         }
     }
@@ -225,6 +225,7 @@ public class StateSpaceSearch extends ConstraintSolver{
             }
         }
 
+        //Look to see that there is at least one legal value
         for (int i = 0; i < puzzleToSolve.length; i++) {
             for (int j = 1; j < 10; j++) {
                 if (LegalValue(puzzleToSolve, row, i, j)) {
@@ -246,6 +247,7 @@ public class StateSpaceSearch extends ConstraintSolver{
             }
         }
 
+        //Look to see that there is at least one legal value
         for (int i = 0; i < puzzleToSolve.length; i++) {
             for (int j = 1; j < 10; j++) {
                 if (LegalValue(puzzleToSolve, i, column, j)) {
@@ -291,6 +293,7 @@ public class StateSpaceSearch extends ConstraintSolver{
             }
         }
 
+        //Check to see that there is at least one possible answer in each square
         for (int i = boxRow; i < boxRow + 3; i++) {
             for (int j = 0; j < boxColumn + 3; j++) {
                 for (int k = 1; k < 10; k++) {
@@ -301,6 +304,8 @@ public class StateSpaceSearch extends ConstraintSolver{
             }
         }
 
+        //If there is at least one solution move on
+        //If no values then backtrack
         if (countRemainingValues == 0) {
             return false;
         } else {
@@ -352,11 +357,11 @@ public class StateSpaceSearch extends ConstraintSolver{
         //
         //get neighbor domains (arcs that have the space we are in)
         int[][] neighborDomains = new int[20][9];
-        int[][] neighbors = puzzle.getNeighbors(row,column);
+        int[][] neighbors = puzzle.getNeighbors(row, column);
         int count = 0;
-        for(int i= 0; i < domains.length; i++) {
-            for(int[] neighbor : neighbors){
-                if(i+1 == ((neighbor[0])*9) + (neighbor[1]+1)){
+        for (int i = 0; i < domains.length; i++) {
+            for (int[] neighbor : neighbors) {
+                if (i + 1 == ((neighbor[0]) * 9) + (neighbor[1] + 1)) {
                     neighborDomains[count] = domains[i];
                     count++;
                     break;
@@ -370,26 +375,26 @@ public class StateSpaceSearch extends ConstraintSolver{
             Boolean legal = true;
             int domainEmpty = 0;
             // check legality
-            for(int x = 0; x < neighborDomains.length; x++){
-                if(!(puzzle.isLocked(neighbors[x][0], neighbors[x][1]))){
-                    for(int y = 0; y < neighborDomains[0].length; y++) {
-                        if(neighborDomains[x][y] == 0){
+            for (int x = 0; x < neighborDomains.length; x++) {
+                if (!(puzzle.isLocked(neighbors[x][0], neighbors[x][1]))) {
+                    for (int y = 0; y < neighborDomains[0].length; y++) {
+                        if (neighborDomains[x][y] == 0) {
                             domainEmpty++;
                         }
                     }
                 }
             }
 
-            if (domainEmpty == 9){
+            if (domainEmpty == 9) {
                 break;
             }
 
-            for(int x = 0; x < puzzleToSolve.length; x++) {
+            for (int x = 0; x < puzzleToSolve.length; x++) {
                 for (int y = 0; y < puzzleToSolve[0].length; y++) {
-                    if(!(x == row && y == column)){
-                        for(int z = 0; z < neighbors.length; z++){
-                            if((x == neighbors[z][0] && y == neighbors[z][1])){
-                                if(i == puzzleToSolve[neighbors[z][0]][neighbors[z][1]]){
+                    if (!(x == row && y == column)) {
+                        for (int z = 0; z < neighbors.length; z++) {
+                            if ((x == neighbors[z][0] && y == neighbors[z][1])) {
+                                if (i == puzzleToSolve[neighbors[z][0]][neighbors[z][1]]) {
                                     legal = false;
                                 }
                                 break;
@@ -401,16 +406,16 @@ public class StateSpaceSearch extends ConstraintSolver{
 
             int[][] newDomains = LegalConsistentValue(puzzleToSolve, row, column, i, domains);
             tracker++;
-            if(legal) {
+            if (legal) {
                 puzzleToSolve[row][column] = i;
                 //tracker++;
                 if (ArcConsistency(puzzleToSolve, n, newDomains)) {
                     return true;
                 } else {
-                    for(int t= 0; t < domains.length; t++) {
-                        if(t+1 == ((row)*9) + (column+1)){
-                            for(int s = 0; s< domains[0].length; s++){
-                                if(newDomains[t][s] == puzzleToSolve[row][column]){
+                    for (int t = 0; t < domains.length; t++) {
+                        if (t + 1 == ((row) * 9) + (column + 1)) {
+                            for (int s = 0; s < domains[0].length; s++) {
+                                if (newDomains[t][s] == puzzleToSolve[row][column]) {
                                     newDomains[t][s] = 0;
                                     break;
                                 }
@@ -424,28 +429,28 @@ public class StateSpaceSearch extends ConstraintSolver{
         return false;
     }
 
-    private int[][] LegalConsistentValue(int[][] puzzleToSolve, int row, int column, int possibleValue, int[][] domains){
+    private int[][] LegalConsistentValue(int[][] puzzleToSolve, int row, int column, int possibleValue, int[][] domains) {
         int[][] newDomains = new int[81][9];
-        for(int i= 0; i < domains.length; i++){
-            for(int j = 0; j < domains[0].length; j++) {
+        for (int i = 0; i < domains.length; i++) {
+            for (int j = 0; j < domains[0].length; j++) {
                 newDomains[i][j] = domains[i][j];
             }
         }
         //remove from the space we are on domain
-        for(int j = 0; j < domains[0].length; j++) {
-            if(newDomains[((row+1)*(column+1))-1][j] == possibleValue){
-                newDomains[((row+1)*(column+1))-1][j] = 0;
+        for (int j = 0; j < domains[0].length; j++) {
+            if (newDomains[((row + 1) * (column + 1)) - 1][j] == possibleValue) {
+                newDomains[((row + 1) * (column + 1)) - 1][j] = 0;
             }
 
         }
 
         // if I pick a value for one domain, update all other domains that neighbor chosen space
-        int[][] neighbors = puzzle.getNeighbors(row,column);
-        for(int i= 0; i < newDomains.length; i++) {
-            for(int[] neighbor : neighbors){
-                if(i+1 == ((neighbor[0])*9) + (neighbor[1]+1)){
+        int[][] neighbors = puzzle.getNeighbors(row, column);
+        for (int i = 0; i < newDomains.length; i++) {
+            for (int[] neighbor : neighbors) {
+                if (i + 1 == ((neighbor[0]) * 9) + (neighbor[1] + 1)) {
                     for (int j = 0; j < newDomains[0].length; j++) {
-                        if(newDomains[i][j] == possibleValue){
+                        if (newDomains[i][j] == possibleValue) {
                             newDomains[i][j] = 0;
                             break;
                         }

@@ -286,11 +286,11 @@ public class BacktrackSearch {
         //
         //get neighbor domains (arcs that have the space we are in)
         int[][] neighborDomains = new int[20][9];
-        int[][] neighbors = puzzle.getNeighbors(row,column);
+        int[][] neighbors = puzzle.getNeighbors(row, column);
         int count = 0;
-        for(int i= 0; i < domains.length; i++) {
-            for(int[] neighbor : neighbors){
-                if(i+1 == ((neighbor[0])*9) + (neighbor[1]+1)){
+        for (int i = 0; i < domains.length; i++) {
+            for (int[] neighbor : neighbors) {
+                if (i + 1 == ((neighbor[0]) * 9) + (neighbor[1] + 1)) {
                     neighborDomains[count] = domains[i];
                     count++;
                     break;
@@ -304,26 +304,26 @@ public class BacktrackSearch {
             Boolean legal = true;
             int domainEmpty = 0;
             // check legality
-            for(int x = 0; x < neighborDomains.length; x++){
-                if(!(puzzle.isLocked(neighbors[x][0], neighbors[x][1]))){
-                    for(int y = 0; y < neighborDomains[0].length; y++) {
-                        if(neighborDomains[x][y] == 0){
+            for (int x = 0; x < neighborDomains.length; x++) {
+                if (!(puzzle.isLocked(neighbors[x][0], neighbors[x][1]))) {
+                    for (int y = 0; y < neighborDomains[0].length; y++) {
+                        if (neighborDomains[x][y] == 0) {
                             domainEmpty++;
                         }
                     }
                 }
             }
 
-            if (domainEmpty == 9){
+            if (domainEmpty == 9) {
                 break;
             }
 
-            for(int x = 0; x < puzzleToSolve.length; x++) {
+            for (int x = 0; x < puzzleToSolve.length; x++) {
                 for (int y = 0; y < puzzleToSolve[0].length; y++) {
-                    if(!(x == row && y == column)){
-                        for(int z = 0; z < neighbors.length; z++){
-                            if((x == neighbors[z][0] && y == neighbors[z][1])){
-                                if(i == puzzleToSolve[neighbors[z][0]][neighbors[z][1]]){
+                    if (!(x == row && y == column)) {
+                        for (int z = 0; z < neighbors.length; z++) {
+                            if ((x == neighbors[z][0] && y == neighbors[z][1])) {
+                                if (i == puzzleToSolve[neighbors[z][0]][neighbors[z][1]]) {
                                     legal = false;
                                 }
                                 break;
@@ -334,15 +334,15 @@ public class BacktrackSearch {
             }
 
             int[][] newDomains = LegalConsistentValue(puzzleToSolve, row, column, i, domains);
-            if(legal) {
+            if (legal) {
                 puzzleToSolve[row][column] = i;
                 if (ArcConsistency(puzzleToSolve, n, newDomains)) {
                     return true;
                 } else {
-                    for(int t= 0; t < domains.length; t++) {
-                        if(t+1 == ((row)*9) + (column+1)){
-                            for(int s = 0; s< domains[0].length; s++){
-                                if(newDomains[t][s] == puzzleToSolve[row][column]){
+                    for (int t = 0; t < domains.length; t++) {
+                        if (t + 1 == ((row) * 9) + (column + 1)) {
+                            for (int s = 0; s < domains[0].length; s++) {
+                                if (newDomains[t][s] == puzzleToSolve[row][column]) {
                                     newDomains[t][s] = 0;
                                     break;
                                 }
@@ -356,28 +356,28 @@ public class BacktrackSearch {
         return false;
     }
 
-    private int[][] LegalConsistentValue(int[][] puzzleToSolve, int row, int column, int possibleValue, int[][] domains){
+    private int[][] LegalConsistentValue(int[][] puzzleToSolve, int row, int column, int possibleValue, int[][] domains) {
         int[][] newDomains = new int[81][9];
-        for(int i= 0; i < domains.length; i++){
-            for(int j = 0; j < domains[0].length; j++) {
+        for (int i = 0; i < domains.length; i++) {
+            for (int j = 0; j < domains[0].length; j++) {
                 newDomains[i][j] = domains[i][j];
             }
         }
         //remove from the space we are on domain
-        for(int j = 0; j < domains[0].length; j++) {
-            if(newDomains[((row+1)*(column+1))-1][j] == possibleValue){
-                newDomains[((row+1)*(column+1))-1][j] = 0;
+        for (int j = 0; j < domains[0].length; j++) {
+            if (newDomains[((row + 1) * (column + 1)) - 1][j] == possibleValue) {
+                newDomains[((row + 1) * (column + 1)) - 1][j] = 0;
             }
 
         }
 
         // if I pick a value for one domain, update all other domains that neighbor chosen space
-        int[][] neighbors = puzzle.getNeighbors(row,column);
-        for(int i= 0; i < newDomains.length; i++) {
-            for(int[] neighbor : neighbors){
-                if(i+1 == ((neighbor[0])*9) + (neighbor[1]+1)){
+        int[][] neighbors = puzzle.getNeighbors(row, column);
+        for (int i = 0; i < newDomains.length; i++) {
+            for (int[] neighbor : neighbors) {
+                if (i + 1 == ((neighbor[0]) * 9) + (neighbor[1] + 1)) {
                     for (int j = 0; j < newDomains[0].length; j++) {
-                        if(newDomains[i][j] == possibleValue){
+                        if (newDomains[i][j] == possibleValue) {
                             newDomains[i][j] = 0;
                             break;
                         }

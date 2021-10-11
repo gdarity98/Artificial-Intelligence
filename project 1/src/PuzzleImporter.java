@@ -13,12 +13,12 @@ public class PuzzleImporter {
         scanner.useDelimiter("\n");
         int i = 0;
         int j = 0;
-        while(scanner.hasNext()){
+        while (scanner.hasNext()) {
             String line = scanner.next();
             line = line.replace('\r', ' ');
             line = line.trim();
             String[] spaces = line.split(",");
-            for(int k = 0; k < spaces.length; k++){
+            for (int k = 0; k < spaces.length; k++) {
                 if (!spaces[k].contains("?")) {
                     // I was getting some weird errors when reading in the trimmed version of the
                     // .csv file if the very first item was a number. Something to do with BOM chars?
@@ -36,45 +36,37 @@ public class PuzzleImporter {
                     immutableValues[i][j] = 1;
                 }
                 j++;
-                if(j == 9){
+                if (j == 9) {
                     i++;
                     j = 0;
                 }
             }
         }
         //setting up 3x3 cubeValues
-        for(int k = 0; k < 9; k++){
-            for(int l = 0; l < 9; l++){
-                if(k >= 0 && k <= 2) {
+        for (int k = 0; k < 9; k++) {
+            for (int l = 0; l < 9; l++) {
+                if (k >= 0 && k <= 2) {
                     if (l >= 0 && l <= 2) {
                         cubeValues[k][l] = 0;
-                    }
-                    else if(l >= 3 && l <= 5){
+                    } else if (l >= 3 && l <= 5) {
                         cubeValues[k][l] = 1;
-                    }
-                    else if(l >= 6 && l <= 8){
+                    } else if (l >= 6 && l <= 8) {
                         cubeValues[k][l] = 2;
                     }
-                }
-                else if(k >= 3 && k <= 5) {
+                } else if (k >= 3 && k <= 5) {
                     if (l >= 0 && l <= 2) {
                         cubeValues[k][l] = 3;
-                    }
-                    else if(l >= 3 && l <= 5){
+                    } else if (l >= 3 && l <= 5) {
                         cubeValues[k][l] = 4;
-                    }
-                    else if(l >= 6 && l <= 8){
+                    } else if (l >= 6 && l <= 8) {
                         cubeValues[k][l] = 5;
                     }
-                }
-                else if(k >= 6 && k <= 8) {
+                } else if (k >= 6 && k <= 8) {
                     if (l >= 0 && l <= 2) {
                         cubeValues[k][l] = 6;
-                    }
-                    else if(l >= 3 && l <= 5){
+                    } else if (l >= 3 && l <= 5) {
                         cubeValues[k][l] = 7;
-                    }
-                    else if(l >= 6 && l <= 8){
+                    } else if (l >= 6 && l <= 8) {
                         cubeValues[k][l] = 8;
                     }
                 }
@@ -83,28 +75,31 @@ public class PuzzleImporter {
         scanner.close();
     }
 
-    public int[][] getSudokuPuzzle(){
+    public int[][] getSudokuPuzzle() {
         return sudokuPuzzle;
     }
 
-    public void setSudokuPuzzle(int[][] puzzle){ sudokuPuzzle = puzzle; }
+    public void setSudokuPuzzle(int[][] puzzle) {
+        sudokuPuzzle = puzzle;
+    }
 
-    public void printSudokuPuzzle(){
-        for(int[] x : sudokuPuzzle){
-            for(int y : x){
+    public void printSudokuPuzzle() {
+        for (int[] x : sudokuPuzzle) {
+            for (int y : x) {
                 System.out.print(y + "  ");
             }
             System.out.print("\n");
         }
     }
 
-    public Boolean isLocked(int x, int y){
-        if(immutableValues[x][y] == 1){
+    public Boolean isLocked(int x, int y) {
+        if (immutableValues[x][y] == 1) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
+
     //x is row y is column
     public int[][] getNeighbors(int x, int y) {
         //System.out.println(sudokuPuzzle[x][y]);
@@ -113,13 +108,13 @@ public class PuzzleImporter {
         int cubeValue = cubeValues[x][y];
         for (int i = 0; i < 9; i++) {
             //adding row to neighbors
-            if(i != y){
+            if (i != y) {
                 neighbors[neighborNum][0] = x;
                 neighbors[neighborNum][1] = i;
                 neighborNum++;
             }
             //adding column to neighbors
-            if(i != x) {
+            if (i != x) {
                 neighbors[neighborNum][0] = i;
                 neighbors[neighborNum][1] = y;
                 neighborNum++;
@@ -129,7 +124,7 @@ public class PuzzleImporter {
         for (int i = 0; i < sudokuPuzzle.length; i++) {
             for (int j = 0; j < sudokuPuzzle[0].length; j++) {
                 if (cubeValues[i][j] == cubeValue) {
-                    if(x != i && y != j){
+                    if (x != i && y != j) {
                         neighbors[neighborNum][0] = i;
                         neighbors[neighborNum][1] = j;
                         neighborNum++;
@@ -140,33 +135,35 @@ public class PuzzleImporter {
         return neighbors;
     }
 
-    public int validateSpace(int x, int y){
+    public int validateSpace(int x, int y) {
         int numConflicts = 0;
         //get neighbors and check for same number
-        int[][] neighbors = getNeighbors(x,y);
+        int[][] neighbors = getNeighbors(x, y);
         int[][] board = getSudokuPuzzle();
-        for(int[] neighbor : neighbors){
-            if(board[neighbor[0]][neighbor[1]] == board[x][y]){
+        for (int[] neighbor : neighbors) {
+            if (board[neighbor[0]][neighbor[1]] == board[x][y]) {
                 numConflicts++;
             }
         }
         return numConflicts;
     }
 
-    public void validateBoard(){
+    public void validateBoard() {
         numConflictsBoard = 0;
-        for(int z = 0; z < sudokuPuzzle.length; z++){
-            for(int y = 0; y < sudokuPuzzle[0].length; y++){
+        for (int z = 0; z < sudokuPuzzle.length; z++) {
+            for (int y = 0; y < sudokuPuzzle[0].length; y++) {
                 numConflictsBoard += validateSpace(z, y);
             }
         }
     }
 
-    public int[][] getCubeValues(){
+    public int[][] getCubeValues() {
         return cubeValues;
     }
 
-    public int getNumConflictsBoard(){return numConflictsBoard;}
+    public int getNumConflictsBoard() {
+        return numConflictsBoard;
+    }
 
     public int[][] getImmutableValues() {
         return immutableValues;
