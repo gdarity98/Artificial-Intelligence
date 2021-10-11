@@ -201,7 +201,7 @@ public class LocalSearch extends ConstraintSolver {
         }
 
         // Temp assigned a value according to schedule (same as simulatedAnnealing?)
-        int T0 = 5000;
+        int T0 = 10000;
         // (5000 seemed to do better... just tuned for easy)
         int Tt;
         int t = 0;
@@ -211,7 +211,7 @@ public class LocalSearch extends ConstraintSolver {
 
         //repeat
         //for i until inf or until a set fitness or number of runs or something that stops the program
-        for (int i = 0; i < 5000; i++) {
+        for (int i = 0; i < 2000; i++) {
             //if temp = 0
             if (Tt == 0) {
                 //   return current even if not completed
@@ -223,8 +223,8 @@ public class LocalSearch extends ConstraintSolver {
                 puzzle.setSudokuPuzzle(A);
                 puzzle.validateBoard();
                 int numConflictsA = puzzle.getNumConflictsBoard();
-                System.out.println(i + " " + numConflictsA);
-                if (numConflictsA == 0) {
+                //System.out.println(i + " " + numConflictsA);
+                if (numConflictsA == 20) {
                     puzzle.setSudokuPuzzle(A);
                     System.out.println("------------------------------FINISHED A BOARD-----------------------");
                     return puzzle;
