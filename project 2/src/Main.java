@@ -1,6 +1,6 @@
 import java.io.FileNotFoundException;
 
-public class Main {
+public class MainProject2 {
     public static void main(String[] args){
         //Setting up worldSizes and putting them in an array for easy access
         // P is the probabilities of pit, obstacle, and wumpus
