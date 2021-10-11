@@ -48,7 +48,7 @@ public class ResolutionBased {
             //need to smell wumpus, feel wind, see shimmer
             boolean[] senses = sense(surroundingSpaces);
             System.out.println(senses);
-            //TODO get a rule based on the senses to send into reasoning?
+            //TODO get a rule based on the senses to send into reasoning? Brock
             //if smell, then there exists a wumpus in the surroundingSpaces
             //if feel, then there exists a pit in the surroundingSpaces
             //if shimmer, then there exists a gold in the surroundingSpaces
@@ -58,7 +58,7 @@ public class ResolutionBased {
             //if not shimmer, then there does not exists a gold in the surroundingSpaces
             //if not(shimmer and smell and feel), then the surroundingSpaces are safe
 
-            //TODO call resolution based search method
+            //TODO call resolution based search method (unification) Kyler
                 // should be able to find existing rules that would make things safe?
                 // update rules
                 // within resolution going to need unification and stuff like that
@@ -69,7 +69,9 @@ public class ResolutionBased {
                 //if smell wumpus chose unexplored cell and shoot to make safe, if you hear no scream go that way
                 //    if you do hear a scream go other way?
 
-            //TODO make choice based on rules
+            //TODO make choice based on rules (resolution) Brock
+            //move to safe space, if multiple we move to one of them randomly
+            //if we can't find a safe space or no rule gives safe space then move randomly
 
             // move choice
             int[] destSpace = new int[2];
@@ -97,20 +99,21 @@ public class ResolutionBased {
                 frontier[playerPosition[0]][playerPosition[1]] = 0;
             }
 
-            //TODO shoot function
+            //TODO shoot function Gabe
             //have outline in function
             boolean scream = shoot(playerPosition,playerDirection);
+            //unification
 
-            //TODO Keep track of stats (add [stat]++ where needed)
+            //TODO Keep track of stats (add [stat]++ where needed) Kyler
         }
 
-        //TODO death = new game
+        //TODO death = new game Gabe?
         //if died from the above game then need to
             //   make new world of same size
             //   reset updatedRules to be ""
             //   run game again on new world (call function again so that stats stay)
 
-        //TODO reactive explorer
+        //TODO reactive explorer Gabe
         //NEED TO FIGURE OUT WHERE TO DO THIS AT THE SAME TIME
         // (Have another explorer updating separately in the above while loop and has its own death
         // and gold found booleans?)
@@ -127,22 +130,22 @@ public class ResolutionBased {
         //check each space to direction facing for a wumpus or obstacle or border(end of array)
         if(playerDirection == 0){//if player direction is 0 then need to decrease playerPosition[0] until <=/==/idk 0 lol
             //if find obstacle first then return false
-            //if find wumpus first then return true
+            //if find wumpus first then return true change W to O
             //if find end of array first then return false
             return true;
         }else if(playerDirection == 2){//if player direction is 2 then need to increase playPos[0] until 4
             //if find obstacle first then return false
-            //if find wumpus first then return true
+            //if find wumpus first then return true W to O
             //if find end of array first then return false
             return true;
         }else if(playerDirection == 3){//if player direction is 3 then need to decrease playPos[1] until 0
             //if find obstacle first then return false
-            //if find wumpus first then return true
+            //if find wumpus first then return true W to O
             //if find end of array first then return false
             return true;
         }else{ //if player direction is 1 then need to increase playPos[1] until 4
             //if find obstacle first then return false
-            //if find wumpus first then return true
+            //if find wumpus first then return true W to O
             //if find end of array first then return false
             return true;
         }

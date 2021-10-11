@@ -18,7 +18,7 @@ public class MainProject2 {
 
         //creating rules and game
         //TODO NEED TO MAKE BASE RULES
-        String rules = "Rule1, Rule2, Rule3";
+        String rules = "Rule1, Rule2, Rule3, Wumpus(X,Y)";
         ResolutionBased game = new ResolutionBased(rules);
 
         //running the game on each worldSize
