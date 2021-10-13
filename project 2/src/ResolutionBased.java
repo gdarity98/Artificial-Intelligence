@@ -48,6 +48,40 @@ public class ResolutionBased {
             //need to smell wumpus, feel wind, see shimmer
             boolean[] senses = sense(surroundingSpaces);
             System.out.println(senses);
+           
+             
+            if (senses[3]){
+            safe[playerPosition[0]] [playerPosition[1]] = 1;
+            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            }
+            if (senses[2]) {
+            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            setGoldFound(1);
+            }
+            if(senses[1]){
+            safe[playerPosition[0]] [playerPosition[1]] = 0;
+            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            }
+            if (senses[0] && senses[1]){
+            safe[playerPosition[0]] [playerPosition[1]] = 0;
+            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            }
+            if (senses[0]){
+            safe[playerPosition[0]] [playerPosition[1]] = 0;
+            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            }
+            if (senses[0] && senses[2]){
+            safe[playerPosition[0]] [playerPosition[1]] = 0;
+            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            }
+            if (senses[1] && senses[2]){
+            safe[playerPosition[0]] [playerPosition[1]] = 0;
+            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            }
+            if (senses[0] && senses[1] && senses[2]){
+            safe[playerPosition[0]] [playerPosition[1]] = 0;
+            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            }
             //TODO get a rule based on the senses to send into reasoning? Brock
             //if smell, then there exists a wumpus in the surroundingSpaces
             //if feel, then there exists a pit in the surroundingSpaces
