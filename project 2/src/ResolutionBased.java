@@ -19,18 +19,18 @@ public class ResolutionBased {
     private int pitDeath = 0;
     private int wumpusDeath = 0;
 
-    public ResolutionBased(String rules){
+    public ResolutionBased(String rules) {
         this.rules = rules;
     }
 
-    public void runGame(int size, double[] prob){
+    public void runGame(int size, double[] prob) {
         world = new World(size, prob);
 
         //Reasoning System Explorer
         //set up game
         safe = new int[world.getFilledWorld().length][world.getFilledWorld()[0].length];
         frontier = new int[world.getFilledWorld().length][world.getFilledWorld()[0].length];
-        for(int[] row : frontier){
+        for (int[] row : frontier) {
             Arrays.fill(row, 1);
         }
 
@@ -44,7 +44,7 @@ public class ResolutionBased {
         //index 0 = north, 1 = east, 2 = south, 3 = west
         int[][] surroundingSpaces = getSurrounding();
         boolean notDead = true;
-        while(notDead){
+        while (notDead) {
             //need to smell wumpus, feel wind, see shimmer
             boolean[] senses = sense(surroundingSpaces);
             System.out.println(senses);
@@ -93,15 +93,21 @@ public class ResolutionBased {
             //if not(shimmer and smell and feel), then the surroundingSpaces are safe
 
             //TODO call resolution based search method (unification) Kyler
-                // should be able to find existing rules that would make things safe?
-                // update rules
-                // within resolution going to need unification and stuff like that
 
-                //IDK about this part
-                // if one safe then choose safe, if several safe choose randomly,
-                //   if no safe then choose randomly
-                //if smell wumpus chose unexplored cell and shoot to make safe, if you hear no scream go that way
-                //    if you do hear a scream go other way?
+            // should be able to find existing rules that would make things safe?
+            // update rules
+            // within resolution going to need unification and stuff like that
+
+            //IDK about this part
+            // if one safe then choose safe, if several safe choose randomly,
+            //   if no safe then choose randomly
+            //if smell wumpus chose unexplored cell and shoot to make safe, if you hear no scream go that way
+            //    if you do hear a scream go other way?
+
+            String holderX = "";
+            String holderY = "";
+            String subst = unify(holderX, holderY, "");
+
 
             //TODO make choice based on rules (resolution) Brock
             //move to safe space, if multiple we move to one of them randomly
@@ -116,36 +122,37 @@ public class ResolutionBased {
 
             //after moving check if the space you are on is safe
             // if it is a pit or wumpus you are dead, if it is gold teleport out
-            if(world.getFilledWorld()[playerPosition[0]][playerPosition[1]].equals("W")){
+            if (world.getFilledWorld()[playerPosition[0]][playerPosition[1]].equals("W")) {
                 points -= 10000;
                 notDead = false;
                 continue;
-            }else if(world.getFilledWorld()[playerPosition[0]][playerPosition[1]].equals("P")){
+            } else if (world.getFilledWorld()[playerPosition[0]][playerPosition[1]].equals("P")) {
                 points -= 10000;
                 notDead = false;
                 continue;
-            }else if(world.getFilledWorld()[playerPosition[0]][playerPosition[1]].equals("G")){
+            } else if (world.getFilledWorld()[playerPosition[0]][playerPosition[1]].equals("G")) {
                 points += 1000;
                 //teleport to safety
                 break;
-            }else{
+            } else {
                 safe[playerPosition[0]][playerPosition[1]] = 1;
                 frontier[playerPosition[0]][playerPosition[1]] = 0;
             }
 
             //TODO shoot function Gabe
             //have outline in function
-            boolean scream = shoot(playerPosition,playerDirection);
+            boolean scream = shoot(playerPosition, playerDirection);
             //unification
 
             //TODO Keep track of stats (add [stat]++ where needed) Kyler
+
         }
 
         //TODO death = new game Gabe?
         //if died from the above game then need to
-            //   make new world of same size
-            //   reset updatedRules to be ""
-            //   run game again on new world (call function again so that stats stay)
+        //   make new world of same size
+        //   reset updatedRules to be ""
+        //   run game again on new world (call function again so that stats stay)
 
         //TODO reactive explorer Gabe
         //NEED TO FIGURE OUT WHERE TO DO THIS AT THE SAME TIME
@@ -159,25 +166,49 @@ public class ResolutionBased {
 
     }
 
+    private String unify(String x, String y, String substList) {
+        if (substList.equals("FAILURE")) {
+            return "";
+        } else if (x.equals(y)) {
+            return substList;
+        } else if (!rules.contains(x)) {
+            return unifyVariables(x, y, substList);
+        } else if (!rules.contains(y)) {
+            return unifyVariables(y, x, substList);
+        //Find out if x and y are ???compounds??? and return
+        } else if (false /* COMPOUND?(x) && COMPOUND?(y) */) {
+            return unify(x, y, unify(x, y, substList)); //pseudo: UNIFY(ARGS[x], ARGS[y], UNIFY(OP[x], OP[y], THETA)) THETA = substList
+        } else if (false/* LIST?(x) && LIST?(y) */) {
+            return unify(x, y, unify(x, y, substList)); //pseudo: UNIFY(REST[x], REST[y], UNIFY(FIRST[x], FIRST[y], THETA)) THETA = substList
+        } else {
+            return "FAILURE";
+        }
+    }
+
+    //TODO Figure out what the hell this algorithm is supposed to do
+    private String unifyVariables(String var, String x, String subRules) {
+        return "THIS DOES NOT WORK YET";
+    }
+
     //returns if you heard a scream or not
     private boolean shoot(int[] playerPosition, int playerDirection) {
         //check each space to direction facing for a wumpus or obstacle or border(end of array)
-        if(playerDirection == 0){//if player direction is 0 then need to decrease playerPosition[0] until <=/==/idk 0 lol
+        if (playerDirection == 0) {//if player direction is 0 then need to decrease playerPosition[0] until <=/==/idk 0 lol
             //if find obstacle first then return false
             //if find wumpus first then return true change W to O
             //if find end of array first then return false
             return true;
-        }else if(playerDirection == 2){//if player direction is 2 then need to increase playPos[0] until 4
+        } else if (playerDirection == 2) {//if player direction is 2 then need to increase playPos[0] until 4
             //if find obstacle first then return false
             //if find wumpus first then return true W to O
             //if find end of array first then return false
             return true;
-        }else if(playerDirection == 3){//if player direction is 3 then need to decrease playPos[1] until 0
+        } else if (playerDirection == 3) {//if player direction is 3 then need to decrease playPos[1] until 0
             //if find obstacle first then return false
             //if find wumpus first then return true W to O
             //if find end of array first then return false
             return true;
-        }else{ //if player direction is 1 then need to increase playPos[1] until 4
+        } else { //if player direction is 1 then need to increase playPos[1] until 4
             //if find obstacle first then return false
             //if find wumpus first then return true W to O
             //if find end of array first then return false
@@ -188,37 +219,37 @@ public class ResolutionBased {
     private int[] move(int[] destSpace, int destDirection) {
         // need to add cost
         // facing the direction we need to be
-        if(playerDirection == destDirection){
+        if (playerDirection == destDirection) {
             //lose a point for moving forward
             //check if next space is obstacle
-            if(world.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")){
+            if (world.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")) {
                 points -= 1;
                 return playerPosition;
-            }else{
+            } else {
                 points -= 1;
                 return destSpace;
             }
-        // need to turn 180 degrees
-        }else if(Math.abs(playerDirection - destDirection) == 2){
+            // need to turn 180 degrees
+        } else if (Math.abs(playerDirection - destDirection) == 2) {
             // lose two points for turning
             points -= 2;
             playerDirection = destDirection;
             //lose a point for moving forward
-            if(world.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")){
+            if (world.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")) {
                 points -= 1;
                 return playerPosition;
-            }else{
+            } else {
                 points -= 1;
                 return destSpace;
             }
-        // need to turn 90 degrees
-        }else{
+            // need to turn 90 degrees
+        } else {
             points -= 1;
             playerDirection = destDirection;
-            if(world.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")){
+            if (world.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")) {
                 points -= 1;
                 return playerPosition;
-            }else{
+            } else {
                 points -= 1;
                 return destSpace;
             }
@@ -235,71 +266,71 @@ public class ResolutionBased {
         int[] west = new int[2];
 
         //filling the arrays with 100, so that if they have 100 at the end I don't need to check them
-        Arrays.fill(north,100);
-        Arrays.fill(east,100);
-        Arrays.fill(south,100);
-        Arrays.fill(west,100);
+        Arrays.fill(north, 100);
+        Arrays.fill(east, 100);
+        Arrays.fill(south, 100);
+        Arrays.fill(west, 100);
 
         //checking position to avoid array out of bounds
         //if the player is in the corner
-        if((pRow == 0 || pRow == 4) && (pCol == 0 || pCol == 4)){
-            if(pRow == 0 && pCol == 0){
+        if ((pRow == 0 || pRow == 4) && (pCol == 0 || pCol == 4)) {
+            if (pRow == 0 && pCol == 0) {
                 east[0] = pRow;
-                east[1] = pCol+1;
-                south[0] = pRow+1;
+                east[1] = pCol + 1;
+                south[0] = pRow + 1;
                 south[1] = pCol;
-            }else if(pRow ==0 && pCol == 4){
-                south[0] = pRow+1;
+            } else if (pRow == 0 && pCol == 4) {
+                south[0] = pRow + 1;
                 south[1] = pCol;
                 west[0] = pRow;
-                west[1] = pCol-1;
-            }else if(pRow == 4 && pCol == 0){
-                north[0] = pRow-1;
+                west[1] = pCol - 1;
+            } else if (pRow == 4 && pCol == 0) {
+                north[0] = pRow - 1;
                 north[1] = pCol;
                 east[0] = pRow;
-                east[1] = pCol+1;
-            }else{
-                north[0] = pRow-1;
+                east[1] = pCol + 1;
+            } else {
+                north[0] = pRow - 1;
                 north[1] = pCol;
                 west[0] = pRow;
-                west[1] = pCol-1;
+                west[1] = pCol - 1;
             }
             //if the player is top or bottom row
-        }else if(pRow == 0 || pRow == 4){
-            if(pRow == 0){
-                south[0] = pRow+1;
+        } else if (pRow == 0 || pRow == 4) {
+            if (pRow == 0) {
+                south[0] = pRow + 1;
                 south[1] = pCol;
-            }else{
-                north[0] = pRow-1;
+            } else {
+                north[0] = pRow - 1;
                 north[1] = pCol;
             }
             east[0] = pRow;
-            east[1] = pCol+1;
+            east[1] = pCol + 1;
             west[0] = pRow;
-            west[1] = pCol-1;
+            west[1] = pCol - 1;
             //if the player is in the far left or far right col
-        }else if(pCol == 0 || pCol == 4){
-            if(pCol == 0){
+        } else if (pCol == 0 || pCol == 4) {
+            if (pCol == 0) {
                 east[0] = pRow;
-                east[1] = pCol+1;
-            }else{
+                east[1] = pCol + 1;
+            } else {
                 west[0] = pRow;
-                west[1] = pCol-1;
+                west[1] = pCol - 1;
             }
-            north[0] = pRow-1;
+            north[0] = pRow - 1;
             north[1] = pCol;
-            south[0] = pRow+1;
+            south[0] = pRow + 1;
             south[1] = pCol;
             //if the player is anywhere else
-        }else{
-            north[0] = pRow-1;
+        } else {
+            north[0] = pRow - 1;
             north[1] = pCol;
             east[0] = pRow;
-            east[1] = pCol+1;
-            south[0] = pRow+1;
+            east[1] = pCol + 1;
+            south[0] = pRow + 1;
             south[1] = pCol;
             west[0] = pRow;
-            west[1] = pCol-1;
+            west[1] = pCol - 1;
         }
 
         int[][] directions = new int[4][2];
@@ -316,14 +347,14 @@ public class ResolutionBased {
         boolean[] senses = new boolean[4];
 
         //check each direction for wumpus, gold, pit
-        for(int[] space : surroundingSpaces){
-            if(space[0] != 100){
+        for (int[] space : surroundingSpaces) {
+            if (space[0] != 100) {
                 String s = world.getFilledWorld()[space[0]][space[1]];
-                if(s.equals("G")){
+                if (s.equals("G")) {
                     senses[2] = true;
-                }else if(s.equals("P")){
+                } else if (s.equals("P")) {
                     senses[1] = true;
-                }else if(s.equals("W")){
+                } else if (s.equals("W")) {
                     senses[0] = true;
                     else{
                     senses[3] = true;
