@@ -313,7 +313,7 @@ public class ResolutionBased {
 
     private boolean[] sense(int[][] surroundingSpaces) {
         //Smell, Feel, Shimmer
-        boolean[] senses = new boolean[3];
+        boolean[] senses = new boolean[4];
 
         //check each direction for wumpus, gold, pit
         for(int[] space : surroundingSpaces){
@@ -325,6 +325,9 @@ public class ResolutionBased {
                     senses[1] = true;
                 }else if(s.equals("W")){
                     senses[0] = true;
+                    else{
+                    senses[3] = true;
+                }
                 }
             }
         }
