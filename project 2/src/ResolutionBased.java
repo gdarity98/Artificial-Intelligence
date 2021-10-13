@@ -356,9 +356,8 @@ public class ResolutionBased {
                     senses[1] = true;
                 } else if (s.equals("W")) {
                     senses[0] = true;
-                    else{
+                }else{
                     senses[3] = true;
-                }
                 }
             }
         }
