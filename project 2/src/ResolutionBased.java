@@ -61,12 +61,12 @@ public class ResolutionBased {
             }
             if (senses[0] && senses[1]){ //pit and wumpus
                 System.out.println(4);
-           safe[startingPos[0]][startingPos[1]] = 0;
+           
            safe[playerPosition.length][playerPosition.length] = 0;
             }
             if (senses[0]){ //wumpus
                 System.out.println(5);
-            safe[startingPos[0]][startingPos[1]] = 0;
+            
             safe[playerPosition.length][playerPosition.length] = 0;
             }
             if (senses[0] && senses[2]){ //wumpus and gold
