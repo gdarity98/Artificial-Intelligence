@@ -50,37 +50,63 @@ public class ResolutionBased {
             System.out.println(senses);
            
              
-            if (senses[3]){
-            safe[playerPosition[0]] [playerPosition[1]] = 1;
-            frontier[playerPosition[0]] [playerPosition[1]] = 0;
-            }
-            if (senses[2]) {
-            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            if (senses[2]) { //gold
+                System.out.println(2);
+           
             setGoldFound(1);
             }
-            if(senses[1]){
-            safe[playerPosition[0]] [playerPosition[1]] = 0;
-            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            if(senses[1]){ //pit
+                System.out.println(3);
+            
             }
-            if (senses[0] && senses[1]){
-            safe[playerPosition[0]] [playerPosition[1]] = 0;
-            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            if (senses[0] && senses[1]){ //pit and wumpus
+                System.out.println(4);
+          
             }
-            if (senses[0]){
-            safe[playerPosition[0]] [playerPosition[1]] = 0;
-            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            if (senses[0]){ //wumpus
+                System.out.println(5);
+           
             }
-            if (senses[0] && senses[2]){
-            safe[playerPosition[0]] [playerPosition[1]] = 0;
-            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            if (senses[0] && senses[2]){ //wumpus and gold
+            System.out.println(6);
+               
             }
-            if (senses[1] && senses[2]){
-            safe[playerPosition[0]] [playerPosition[1]] = 0;
-            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            if (senses[1] && senses[2]){ //pit and gold
+                System.out.println(7);
+           
             }
-            if (senses[0] && senses[1] && senses[2]){
-            safe[playerPosition[0]] [playerPosition[1]] = 0;
-            frontier[playerPosition[0]] [playerPosition[1]] = 0;
+            if (senses[0] && senses[1] && senses[2]){ //all three
+            System.out.println(8);
+            
+            }
+            if (!senses[2]) { //not gold
+                System.out.println(21);
+            
+           
+            }
+            if(!senses[1]){ //not pit
+                System.out.println(31);
+        
+            }
+            if (!senses[0] && !senses[1]){ //not pit or wumpus
+                System.out.println(41);
+            
+            }
+            if (!senses[0]){ //not wumpus
+                System.out.println(51);
+          
+            }
+            if (!senses[0] && !senses[2]){ //not gold or wumpus
+            System.out.println(61);
+               
+            }
+            if (!senses[1] && !senses[2]){ //not gold or pit
+                System.out.println(71);
+            
+            }
+            if (!senses[0] && !senses[1] && !senses[2]){ //none of them
+            System.out.println(81);
+                
             }
             //TODO get a rule based on the senses to send into reasoning? Brock
             //if smell, then there exists a wumpus in the surroundingSpaces
@@ -362,7 +388,7 @@ public class ResolutionBased {
 
     private boolean[] sense(int[][] surroundingSpaces) {
         //Smell, Feel, Shimmer
-        boolean[] senses = new boolean[4];
+        boolean[] senses = new boolean[3];
 
         //check each direction for wumpus, gold, pit
         for (int[] space : surroundingSpaces) {
@@ -374,8 +400,6 @@ public class ResolutionBased {
                     senses[1] = true;
                 } else if (s.equals("W")) {
                     senses[0] = true;
-                }else{
-                    senses[3] = true;
                 }
             }
         }
