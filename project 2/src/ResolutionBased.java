@@ -50,25 +50,28 @@ public class ResolutionBased {
             System.out.println(senses);
            
              
-            if (senses[2]) { //gold
+          if (senses[2]) { //gold
                 System.out.println(2);
            
             setGoldFound(1);
             }
             if(senses[1]){ //pit
                 System.out.println(3);
-            
+             safe[playerPosition.length][playerPosition.length] = 0;
             }
             if (senses[0] && senses[1]){ //pit and wumpus
                 System.out.println(4);
-          
+           safe[startingPos[0]][startingPos[1]] = 0;
+           safe[playerPosition.length][playerPosition.length] = 0;
             }
             if (senses[0]){ //wumpus
                 System.out.println(5);
-           
+            safe[startingPos[0]][startingPos[1]] = 0;
+            safe[playerPosition.length][playerPosition.length] = 0;
             }
             if (senses[0] && senses[2]){ //wumpus and gold
             System.out.println(6);
+            
                
             }
             if (senses[1] && senses[2]){ //pit and gold
@@ -90,7 +93,7 @@ public class ResolutionBased {
             }
             if (!senses[0] && !senses[1]){ //not pit or wumpus
                 System.out.println(41);
-            
+             safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
             }
             if (!senses[0]){ //not wumpus
                 System.out.println(51);
@@ -102,12 +105,11 @@ public class ResolutionBased {
             }
             if (!senses[1] && !senses[2]){ //not gold or pit
                 System.out.println(71);
-            
+                
             }
             if (!senses[0] && !senses[1] && !senses[2]){ //none of them
             System.out.println(81);
-            safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
-                
+                safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
             }
             //TODO get a rule based on the senses to send into reasoning? Brock
             //if smell, then there exists a wumpus in the surroundingSpaces
