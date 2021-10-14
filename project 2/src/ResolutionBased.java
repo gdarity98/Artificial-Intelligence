@@ -104,9 +104,27 @@ public class ResolutionBased {
             //if smell wumpus chose unexplored cell and shoot to make safe, if you hear no scream go that way
             //    if you do hear a scream go other way?
 
+
+            /*Senses key:
+            0 = Wumpus (W)
+            1 = Pit    (P)
+            2 = Gold   (G)
+            3 = SAFE?  (S)
+             */
             String holderX = "";
             String holderY = "";
             String subst = unify(holderX, holderY, "");
+
+            if (senses[3]) {
+                rules = rules + "; " + unify(rules, ("Safe(" + playerPosition[0] + "," + playerPosition[1] + ")"), "");
+            } else if (senses[2]) {
+                //Move to find Gold???
+                rules = rules + "; " + unify(rules, ("Glitter(" + playerPosition[0] + "," + playerPosition[1] + ")"), "");
+            } else if (senses[1]) {
+                rules = rules + "; " + unify(rules, ("Breeze(" + playerPosition[0] + "," + playerPosition[1] + ")"), "");
+            } else if (senses[0]) {
+                rules = rules + "; " + unify(rules, ("Smell(" + playerPosition[0] + "," + playerPosition[1] + ")"), "");
+            }
 
 
             //TODO make choice based on rules (resolution) Brock
@@ -175,11 +193,11 @@ public class ResolutionBased {
             return unifyVariables(x, y, substList);
         } else if (!rules.contains(y)) {
             return unifyVariables(y, x, substList);
-        //Find out if x and y are ???compounds??? and return
-        } else if (false /* COMPOUND?(x) && COMPOUND?(y) */) {
-            return unify(x, y, unify(x, y, substList)); //pseudo: UNIFY(ARGS[x], ARGS[y], UNIFY(OP[x], OP[y], THETA)) THETA = substList
-        } else if (false/* LIST?(x) && LIST?(y) */) {
-            return unify(x, y, unify(x, y, substList)); //pseudo: UNIFY(REST[x], REST[y], UNIFY(FIRST[x], FIRST[y], THETA)) THETA = substList
+//        Find out if x and y are ???compounds??? and return
+//        } else if (false /* COMPOUND?(x) && COMPOUND?(y) */) {
+//            return unify(x, y, unify(x, y, substList)); //pseudo: UNIFY(ARGS[x], ARGS[y], UNIFY(OP[x], OP[y], THETA)) THETA = substList
+//        } else if (false/* LIST?(x) && LIST?(y) */) {
+//            return unify(x, y, unify(x, y, substList)); //pseudo: UNIFY(REST[x], REST[y], UNIFY(FIRST[x], FIRST[y], THETA)) THETA = substList
         } else {
             return "FAILURE";
         }
