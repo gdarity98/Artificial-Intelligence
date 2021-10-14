@@ -26,7 +26,9 @@ public class MainProject2 {
         // run until gold found on one of the worlds, returns stats?
         //    need to add it returning stats (build a string of the stats and return the string?)
         for(int worldSize : worldSizes){
-            game.runGame(worldSize, p);
+            game.runGame(worldSize, p, true, true);
+            //get and print game stats
+            game.printStatsFull();
         }
     }
 }

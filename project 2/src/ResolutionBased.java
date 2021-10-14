@@ -4,13 +4,19 @@ public class ResolutionBased {
     private String updatedRules = "";
     private String rules = "";
     private int[][] safe; //is this the same as visited?: 1 is safe 0 is unsafe (set as 2 for discovered obstacle?)
-    private int[][] frontier; //unexplored:  1 is unexplored 0 is explored
+    private int[][] frontier; //unexplored:  1 is unexplored 0 is
+    private int[][] reactiveSafe; //is this the same as visited?: 1 is safe 0 is unsafe (set as 2 for discovered obstacle?)
+    private int[][] reactiveFrontier; //unexplored:  1 is unexplored 0 is explored
     private int[] playerPosition = new int[2];
+    private int[] playerReactivePosition = new int[2];
     private int playerDirection;
+    private int playerReactiveDirection;
     private int points = 0;
+    private int reactivePoints = 0;
 
     //world information
     private World world;
+    private World reactiveWorld;
 
     //stats of the game
     private int cellsExplored = 0;
@@ -19,18 +25,37 @@ public class ResolutionBased {
     private int pitDeath = 0;
     private int wumpusDeath = 0;
 
+    private int reactiveCellsExplored = 0;
+    private int reactiveWumpusKilled = 0;
+    private int reactiveGoldFound = 0;
+    private int reactivePitDeath = 0;
+    private int reactiveWumpusDeath = 0;
+
     public ResolutionBased(String rules) {
         this.rules = rules;
+        this.updatedRules = this.rules;
     }
 
-    public void runGame(int size, double[] prob) {
+    public void runGame(int size, double[] prob, boolean runReasoning, boolean runReactive) {
         world = new World(size, prob);
+        //set up copy of world for reactive agent to run on
+        reactiveWorld = new World(size, prob);
+        reactiveWorld.setFilledWorld(world.getFilledWorld());
+        reactiveWorld.setPlayerStartingDirection(world.getPlayerStartingDirection());
+        reactiveWorld.setPlayerStartingPosition(world.getPlayerStartingPosition());
+        reactiveWorld.setStartingArrows(world.getStartingArrows());
 
         //Reasoning System Explorer
-        //set up game
+        //set up game for both reactive and reasoning
         safe = new int[world.getFilledWorld().length][world.getFilledWorld()[0].length];
         frontier = new int[world.getFilledWorld().length][world.getFilledWorld()[0].length];
         for (int[] row : frontier) {
+            Arrays.fill(row, 1);
+        }
+
+        reactiveSafe = new int[world.getFilledWorld().length][world.getFilledWorld()[0].length];
+        reactiveFrontier = new int[world.getFilledWorld().length][world.getFilledWorld()[0].length];
+        for(int[] row : reactiveFrontier){
             Arrays.fill(row, 1);
         }
 
@@ -40,6 +65,13 @@ public class ResolutionBased {
         frontier[startingPos[0]][startingPos[1]] = 0;
         playerPosition = startingPos;
         playerDirection = world.getPlayerStartingDirection();
+
+        int[] reactiveStartingPos = reactiveWorld.getPlayerStartingPosition();
+        reactiveSafe[reactiveStartingPos[0]][reactiveStartingPos[1]] = 1;
+        reactiveFrontier[reactiveStartingPos[0]][reactiveStartingPos[1]] = 0;
+        playerReactivePosition = reactiveStartingPos;
+        playerReactiveDirection = reactiveWorld.getPlayerStartingDirection();
+
 
         //index 0 = north, 1 = east, 2 = south, 3 = west
         int[][] surroundingSpaces = getSurrounding();
@@ -53,7 +85,7 @@ public class ResolutionBased {
           if (senses[2]) { //gold
                 System.out.println(2);
            
-            setGoldFound(1);
+            goldFound++;
             }
             if(senses[1]){ //pit
                 System.out.println(3);
@@ -186,8 +218,7 @@ public class ResolutionBased {
                 frontier[playerPosition[0]][playerPosition[1]] = 0;
             }
 
-            //TODO shoot function Gabe
-            //have outline in function
+            //shoot function
             boolean scream = shoot(playerPosition, playerDirection);
             //unification
 
@@ -195,22 +226,46 @@ public class ResolutionBased {
 
         }
 
-        //TODO death = new game Gabe?
-        //if died from the above game then need to
-        //   make new world of same size
-        //   reset updatedRules to be ""
-        //   run game again on new world (call function again so that stats stay)
-
         //TODO reactive explorer Gabe
-        //NEED TO FIGURE OUT WHERE TO DO THIS AT THE SAME TIME
-        // (Have another explorer updating separately in the above while loop and has its own death
-        // and gold found booleans?)
-        //while not dead
         //Reactive Explorer
         //  we need to also make this!!!
         //  should run on same world
         //  stats contained separately for comparison
 
+        // run reactive until death or gold found
+        boolean notDeadReactive = true;
+        while(notDeadReactive){
+            //Reactive Explorer
+            //  we need to also make this!!!
+            //  should run on same world
+            //  stats contained separately for comparison
+            //TODO Keep track of stats for Reactive (add [stat]++ where needed)
+            break;
+        }
+
+        //Game keeps going until agent wins
+        //death = new game
+        //winning means stop running
+        //check only if we are still running one of the games
+        if(runReasoning != false){
+            if(notDead == true){
+                runReasoning = false;
+            }
+        }
+
+        if(runReactive != false){
+            if(notDeadReactive == true){
+                runReactive = false;
+            }
+        }
+
+        // but don't run a new game when you get to a game that successfully teleports out
+        // for both reactive and reasoning
+        if(runReactive == true || runReasoning == true){
+            updatedRules = rules;
+            runGame(size,prob, runReasoning, runReactive);
+        }
+        return;
     }
 
     private String unify(String x, String y, String substList) {
@@ -240,26 +295,54 @@ public class ResolutionBased {
     //returns if you heard a scream or not
     private boolean shoot(int[] playerPosition, int playerDirection) {
         //check each space to direction facing for a wumpus or obstacle or border(end of array)
-        if (playerDirection == 0) {//if player direction is 0 then need to decrease playerPosition[0] until <=/==/idk 0 lol
-            //if find obstacle first then return false
-            //if find wumpus first then return true change W to O
-            //if find end of array first then return false
-            return true;
-        } else if (playerDirection == 2) {//if player direction is 2 then need to increase playPos[0] until 4
-            //if find obstacle first then return false
-            //if find wumpus first then return true W to O
-            //if find end of array first then return false
-            return true;
-        } else if (playerDirection == 3) {//if player direction is 3 then need to decrease playPos[1] until 0
-            //if find obstacle first then return false
-            //if find wumpus first then return true W to O
-            //if find end of array first then return false
-            return true;
-        } else { //if player direction is 1 then need to increase playPos[1] until 4
-            //if find obstacle first then return false
-            //if find wumpus first then return true W to O
-            //if find end of array first then return false
-            return true;
+        if(playerDirection == 0){//if player direction is 0 then need to decrease playerPosition[0] until <=/==/idk 0 lol
+            for(int i = playerPosition[0]; i >= 0; i--){
+                //if find obstacle first then return false
+                //if find wumpus first then return true
+                //if find end of array first then return false
+                if(world.getFilledWorld()[i][playerPosition[1]].equals("O")){
+                    return false;
+                }else if(world.getFilledWorld()[i][playerPosition[1]].equals("W")){
+                    return true;
+                }
+            }
+            return false;
+        }else if(playerDirection == 2){//if player direction is 2 then need to increase playPos[0] until 4
+            for(int i = playerPosition[0]; i <= 4; i++){
+                //if find obstacle first then return false
+                //if find wumpus first then return true
+                //if find end of array first then return false
+                if(world.getFilledWorld()[i][playerPosition[1]].equals("O")){
+                    return false;
+                }else if(world.getFilledWorld()[i][playerPosition[1]].equals("W")){
+                    return true;
+                }
+            }
+            return false;
+        }else if(playerDirection == 3){//if player direction is 3 then need to decrease playPos[1] until 0
+            for(int i = playerPosition[1]; i >= 0; i--){
+                //if find obstacle first then return false
+                //if find wumpus first then return true
+                //if find end of array first then return false
+                if(world.getFilledWorld()[playerPosition[0]][i].equals("O")){
+                    return false;
+                }else if(world.getFilledWorld()[playerPosition[0]][i].equals("W")){
+                    return true;
+                }
+            }
+            return false;
+        }else{ //if player direction is 1 then need to increase playPos[1] until 4
+            for(int i = playerPosition[1]; i <= 4; i++){
+                //if find obstacle first then return false
+                //if find wumpus first then return true
+                //if find end of array first then return false
+                if(world.getFilledWorld()[playerPosition[0]][i].equals("O")){
+                    return false;
+                }else if(world.getFilledWorld()[playerPosition[0]][i].equals("W")){
+                    return true;
+                }
+            }
+            return false;
         }
     }
 
@@ -269,6 +352,10 @@ public class ResolutionBased {
         if (playerDirection == destDirection) {
             //lose a point for moving forward
             //check if next space is obstacle
+            if(destSpace[0] == 100){
+                // moves forward into a border and explorer knows it cannot move there
+                return playerPosition;
+            }
             if (world.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")) {
                 points -= 1;
                 return playerPosition;
@@ -280,6 +367,10 @@ public class ResolutionBased {
         } else if (Math.abs(playerDirection - destDirection) == 2) {
             // lose two points for turning
             points -= 2;
+            if(destSpace[0] == 100){
+                points -= 1;
+                return playerPosition;
+            }
             playerDirection = destDirection;
             //lose a point for moving forward
             if (world.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")) {
@@ -292,6 +383,10 @@ public class ResolutionBased {
             // need to turn 90 degrees
         } else {
             points -= 1;
+            if(destSpace[1] == 100){
+                points -= 1;
+                return playerPosition;
+            }
             playerDirection = destDirection;
             if (world.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")) {
                 points -= 1;
@@ -409,43 +504,68 @@ public class ResolutionBased {
         return senses;
     }
 
-    public int getCellsExplored() {
-        return cellsExplored;
+    public void printStatsFull(){
+        System.out.println("Reasoning:");
+        printStatForType(cellsExplored, goldFound, pitDeath, wumpusDeath, wumpusKilled, points);
+
+        System.out.println("Reactive:");
+        printStatForType(reactiveCellsExplored, reactiveGoldFound, reactivePitDeath, reactiveWumpusDeath, reactiveWumpusKilled, reactivePoints);
     }
 
-    public void setCellsExplored(int cellsExplored) {
-        this.cellsExplored = cellsExplored;
+    private void printStatForType(int cellsExplored, int goldFound, int pitDeath, int wumpusDeath, int wumpusKilled, int points) {
+        System.out.println("Cells Explored: " + cellsExplored);
+        System.out.println("Gold Found: " + goldFound);
+        System.out.println("Pit Deaths: " + pitDeath);
+        System.out.println("Wumpus Deaths: " + wumpusDeath);
+        System.out.println("Wumpus Killed: " + wumpusKilled);
+        System.out.println("Points: " + points);
+    }
+
+    public int getCellsExplored() {
+        return cellsExplored;
     }
 
     public int getGoldFound() {
         return goldFound;
     }
 
-    public void setGoldFound(int goldFound) {
-        this.goldFound = goldFound;
-    }
-
     public int getPitDeath() {
         return pitDeath;
-    }
-
-    public void setPitDeath(int pitDeath) {
-        this.pitDeath = pitDeath;
     }
 
     public int getWumpusDeath() {
         return wumpusDeath;
     }
 
-    public void setWumpusDeath(int wumpusDeath) {
-        this.wumpusDeath = wumpusDeath;
-    }
-
     public int getWumpusKilled() {
         return wumpusKilled;
     }
 
-    public void setWumpusKilled(int wumpusKilled) {
-        this.wumpusKilled = wumpusKilled;
+    public int getPoints() {
+        return points;
+    }
+
+    public int getReactiveCellsExplored() {
+        return reactiveCellsExplored;
+    }
+
+    public int getReactiveGoldFound() {
+        return reactiveGoldFound;
+    }
+
+    public int getReactivePitDeath() {
+        return reactivePitDeath;
+    }
+
+    public int getReactiveWumpusDeath() {
+        return reactiveWumpusDeath;
+    }
+
+    public int getReactiveWumpusKilled() {
+        return reactiveWumpusKilled;
+    }
+
+    public int getReactivePoints() {
+        return reactivePoints;
     }
 }

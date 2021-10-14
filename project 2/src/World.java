@@ -96,4 +96,19 @@ public class World {
         return startingArrows;
     }
 
+    public void setStartingArrows(int startingArrows) {
+        this.startingArrows = startingArrows;
+    }
+
+    public void setPlayerStartingPosition(int[] playerStartingPosition) {
+        this.playerStartingPosition = playerStartingPosition;
+    }
+
+    public void setPlayerStartingDirection(int playerStartingDirection) {
+        this.playerStartingDirection = playerStartingDirection;
+    }
+
+    public void setFilledWorld(String[][] filledWorld) {
+        this.filledWorld = filledWorld;
+    }
 }
