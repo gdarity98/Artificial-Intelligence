@@ -80,6 +80,67 @@ public class ResolutionBased {
             //need to smell wumpus, feel wind, see shimmer
             boolean[] senses = sense(surroundingSpaces);
             System.out.println(senses);
+            if (senses[2]) { //gold
+                System.out.println(2);
+
+                goldFound++;
+            }
+            if(senses[1]){ //pit
+                System.out.println(3);
+                safe[playerPosition.length][playerPosition.length] = 0;
+            }
+            if (senses[0] && senses[1]){ //pit and wumpus
+                System.out.println(4);
+
+                safe[playerPosition.length][playerPosition.length] = 0;
+            }
+            if (senses[0]){ //wumpus
+                System.out.println(5);
+
+                safe[playerPosition.length][playerPosition.length] = 0;
+            }
+            if (senses[0] && senses[2]){ //wumpus and gold
+                System.out.println(6);
+
+
+            }
+            if (senses[1] && senses[2]){ //pit and gold
+                System.out.println(7);
+
+            }
+            if (senses[0] && senses[1] && senses[2]){ //all three
+                System.out.println(8);
+
+            }
+            if (!senses[2]) { //not gold
+                System.out.println(21);
+
+
+            }
+            if(!senses[1]){ //not pit
+                System.out.println(31);
+
+            }
+            if (!senses[0] && !senses[1]){ //not pit or wumpus
+                System.out.println(41);
+                safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
+            }
+            if (!senses[0]){ //not wumpus
+                System.out.println(51);
+
+            }
+            if (!senses[0] && !senses[2]){ //not gold or wumpus
+                System.out.println(61);
+
+            }
+            if (!senses[1] && !senses[2]){ //not gold or pit
+                System.out.println(71);
+
+            }
+            if (!senses[0] && !senses[1] && !senses[2]){ //none of them
+                System.out.println(81);
+                safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
+            }
             //TODO get a rule based on the senses to send into reasoning? Brock
             //if smell, then there exists a wumpus in the surroundingSpaces
             //if feel, then there exists a pit in the surroundingSpaces
@@ -91,15 +152,37 @@ public class ResolutionBased {
             //if not(shimmer and smell and feel), then the surroundingSpaces are safe
 
             //TODO call resolution based search method (unification) Kyler
-                // should be able to find existing rules that would make things safe?
-                // update rules
-                // within resolution going to need unification and stuff like that
+            // should be able to find existing rules that would make things safe?
+            // update rules
+            // within resolution going to need unification and stuff like that
 
-                //IDK about this part
-                // if one safe then choose safe, if several safe choose randomly,
-                //   if no safe then choose randomly
-                //if smell wumpus chose unexplored cell and shoot to make safe, if you hear no scream go that way
-                //    if you do hear a scream go other way?
+            //IDK about this part
+            // if one safe then choose safe, if several safe choose randomly,
+            //   if no safe then choose randomly
+            //if smell wumpus chose unexplored cell and shoot to make safe, if you hear no scream go that way
+            //    if you do hear a scream go other way?
+
+
+            /*Senses key:
+            0 = Wumpus (W)
+            1 = Pit    (P)
+            2 = Gold   (G)
+            3 = SAFE?  (S)
+             */
+            String holderX = "";
+            String holderY = "";
+            String subst = unify(holderX, holderY, "");
+
+            if (senses[3]) {
+                rules = rules + "; " + unify(rules, ("Safe(" + playerPosition[0] + "," + playerPosition[1] + ")"), "");
+            } else if (senses[2]) {
+                //Move to find Gold???
+                rules = rules + "; " + unify(rules, ("Glitter(" + playerPosition[0] + "," + playerPosition[1] + ")"), "");
+            } else if (senses[1]) {
+                rules = rules + "; " + unify(rules, ("Breeze(" + playerPosition[0] + "," + playerPosition[1] + ")"), "");
+            } else if (senses[0]) {
+                rules = rules + "; " + unify(rules, ("Smell(" + playerPosition[0] + "," + playerPosition[1] + ")"), "");
+            }
 
             //TODO make choice based on rules (resolution) Brock
             //move to safe space, if multiple we move to one of them randomly
@@ -180,6 +263,30 @@ public class ResolutionBased {
             runGame(size,prob, runReasoning, runReactive);
         }
         return;
+    }
+    
+    private String unify(String x, String y, String substList) {
+        if (substList.equals("FAILURE")) {
+            return "";
+        } else if (x.equals(y)) {
+            return substList;
+        } else if (!rules.contains(x)) {
+            return unifyVariables(x, y, substList);
+        } else if (!rules.contains(y)) {
+            return unifyVariables(y, x, substList);
+//        Find out if x and y are ???compounds??? and return
+//        } else if (false /* COMPOUND?(x) && COMPOUND?(y) */) {
+//            return unify(x, y, unify(x, y, substList)); //pseudo: UNIFY(ARGS[x], ARGS[y], UNIFY(OP[x], OP[y], THETA)) THETA = substList
+//        } else if (false/* LIST?(x) && LIST?(y) */) {
+//            return unify(x, y, unify(x, y, substList)); //pseudo: UNIFY(REST[x], REST[y], UNIFY(FIRST[x], FIRST[y], THETA)) THETA = substList
+        } else {
+            return "FAILURE";
+        }
+    }
+
+    //TODO Figure out what the hell this algorithm is supposed to do
+    private String unifyVariables(String var, String x, String subRules) {
+        return "THIS DOES NOT WORK YET";
     }
 
     //returns if you heard a scream or not
