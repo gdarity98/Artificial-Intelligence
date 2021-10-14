@@ -106,6 +106,7 @@ public class ResolutionBased {
             }
             if (!senses[0] && !senses[1] && !senses[2]){ //none of them
             System.out.println(81);
+            safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
                 
             }
             //TODO get a rule based on the senses to send into reasoning? Brock
