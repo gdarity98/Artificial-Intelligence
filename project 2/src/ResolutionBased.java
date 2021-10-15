@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import java.util.Random;
 
 public class ResolutionBased {
     private String updatedRules = "";
@@ -36,7 +37,7 @@ public class ResolutionBased {
         this.updatedRules = this.rules;
     }
 
-    public void runGame(int size, double[] prob, boolean runReasoning, boolean runReactive) {
+    public void runGame(int size, double[] prob, boolean runReasoning) {
         world = new World(size, prob);
         //set up copy of world for reactive agent to run on
         reactiveWorld = new World(size, prob);
@@ -46,16 +47,10 @@ public class ResolutionBased {
         reactiveWorld.setStartingArrows(world.getStartingArrows());
 
         //Reasoning System Explorer
-        //set up game for both reactive and reasoning
+        //set up game for both reasoning
         safe = new int[world.getFilledWorld().length][world.getFilledWorld()[0].length];
         frontier = new int[world.getFilledWorld().length][world.getFilledWorld()[0].length];
         for (int[] row : frontier) {
-            Arrays.fill(row, 1);
-        }
-
-        reactiveSafe = new int[world.getFilledWorld().length][world.getFilledWorld()[0].length];
-        reactiveFrontier = new int[world.getFilledWorld().length][world.getFilledWorld()[0].length];
-        for(int[] row : reactiveFrontier){
             Arrays.fill(row, 1);
         }
 
@@ -66,15 +61,9 @@ public class ResolutionBased {
         playerPosition = startingPos;
         playerDirection = world.getPlayerStartingDirection();
 
-        int[] reactiveStartingPos = reactiveWorld.getPlayerStartingPosition();
-        reactiveSafe[reactiveStartingPos[0]][reactiveStartingPos[1]] = 1;
-        reactiveFrontier[reactiveStartingPos[0]][reactiveStartingPos[1]] = 0;
-        playerReactivePosition = reactiveStartingPos;
-        playerReactiveDirection = reactiveWorld.getPlayerStartingDirection();
-
 
         //index 0 = north, 1 = east, 2 = south, 3 = west
-        int[][] surroundingSpaces = getSurrounding();
+        int[][] surroundingSpaces = getSurrounding(playerPosition);
         boolean notDead = true;
         while (notDead) {
             //need to smell wumpus, feel wind, see shimmer
@@ -196,7 +185,7 @@ public class ResolutionBased {
             int[] destSpace = new int[2];
             //example movement choice for testing
             destSpace = surroundingSpaces[0];
-            playerPosition = move(destSpace, 0);
+            playerPosition = moveReasoning(destSpace, 0);
             // (you won't move to a new space if destSpace was an obstacle or dead wumpus)
 
             //after moving check if the space you are on is safe
@@ -226,24 +215,27 @@ public class ResolutionBased {
 
         }
 
-        //TODO reactive explorer Gabe
         //Reactive Explorer
-        //  we need to also make this!!!
-        //  should run on same world
-        //  stats contained separately for comparison
-
+        //it makes a decision which cell to enter at random based on
+        //whether or not it believes the neighboring cell is safe.
+        //So it selects first from safe neighboring cells, next
+        //from unsafe neighboring cells. Record the same statistics for this reactive explorer.
         // run reactive until death or gold found
-        boolean notDeadReactive = true;
-        while(notDeadReactive){
-            //Reactive Explorer
-            //  we need to also make this!!!
-            //  should run on same world
-            //  stats contained separately for comparison
-            //TODO Keep track of stats for Reactive (add [stat]++ where needed)
-            break;
+        reactiveSafe = new int[reactiveWorld.getFilledWorld().length][reactiveWorld.getFilledWorld()[0].length];
+        reactiveFrontier = new int[reactiveWorld.getFilledWorld().length][reactiveWorld.getFilledWorld()[0].length];
+        for(int[] row : reactiveFrontier){
+            Arrays.fill(row, 1);
         }
 
-        //Game keeps going until agent wins
+        int[] reactiveStartingPos = reactiveWorld.getPlayerStartingPosition();
+        reactiveSafe[reactiveStartingPos[0]][reactiveStartingPos[1]] = 1;
+        reactiveFrontier[reactiveStartingPos[0]][reactiveStartingPos[1]] = 0;
+        playerReactivePosition = reactiveStartingPos;
+        playerReactiveDirection = reactiveWorld.getPlayerStartingDirection();
+
+        runReactive();
+
+        //Game keeps going until reasoning agent wins
         //death = new game
         //winning means stop running
         //check only if we are still running one of the games
@@ -253,19 +245,206 @@ public class ResolutionBased {
             }
         }
 
-        if(runReactive != false){
-            if(notDeadReactive == true){
-                runReactive = false;
-            }
-        }
-
         // but don't run a new game when you get to a game that successfully teleports out
         // for both reactive and reasoning
-        if(runReactive == true || runReasoning == true){
+        if(runReasoning == true){
             updatedRules = rules;
-            runGame(size,prob, runReasoning, runReactive);
+            runGame(size,prob, true);
         }
         return;
+    }
+
+    private void runReactive() {
+        boolean notDeadReactive = true;
+        while(notDeadReactive){
+            int[][] surroundingSpaces = getSurrounding(playerReactivePosition);
+            //[smell, feel, shimmer]
+            boolean[] senses = sense(surroundingSpaces);
+            Random random = new Random();
+            int prob = random.nextInt(2);
+            // true, false, false
+            if(senses[0] && !senses[1] && !senses[2]) {
+                if(prob == 0){ // prob of shooting
+                    //if hear scream move in any direction but that one
+                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection);
+                    if(scream){
+                        moveRandomReactive(surroundingSpaces, random, playerReactiveDirection);
+                        // else move in that direction
+                    }else{
+                        moveReactive(surroundingSpaces[playerReactiveDirection], playerReactiveDirection);
+                    }
+                }else{ // prob of moving at random
+                    moveRandomReactive(surroundingSpaces, random, 100);
+                }
+            }
+            // true, true, false
+            if(senses[0] && senses[1] && !senses[2]) {
+                if(prob == 0){ // prob of shooting
+                    //if hear scream move in any direction but that one
+                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection);
+                    if(scream){
+                        moveRandomReactive(surroundingSpaces, random, playerReactiveDirection);
+                    // else move in that direction
+                    }else{
+                        moveReactive(surroundingSpaces[playerReactiveDirection], playerReactiveDirection);
+                    }
+                }else{ // prob of moving at random
+                    moveRandomReactive(surroundingSpaces, random, 100);
+                }
+            }
+            // true, false, true
+            if(senses[0] && !senses[1] && senses[2]) {
+                if(prob == 0){ // prob of shooting
+                    //if hear scream move in any direction but that one
+                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection);
+                    if(scream){
+                        moveRandomReactive(surroundingSpaces, random, playerReactiveDirection);
+                        // else move in that direction
+                    }else{
+                        moveReactive(surroundingSpaces[playerReactiveDirection], playerReactiveDirection);
+                    }
+                }else{ // prob of moving at random
+                    moveRandomReactive(surroundingSpaces, random, 100);
+                }
+            }
+            // true, true, true
+            if(senses[0] && senses[1] && senses[2]) {
+                if(prob == 0){ // prob of shooting
+                    //if hear scream move in any direction but that one
+                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection);
+                    if(scream){
+                        moveRandomReactive(surroundingSpaces, random, playerReactiveDirection);
+                        // else move in that direction
+                    }else{
+                        moveReactive(surroundingSpaces[playerReactiveDirection], playerReactiveDirection);
+                    }
+                }else{ // prob of moving at random
+                    moveRandomReactive(surroundingSpaces, random, 100);
+                }
+            }
+            // false, false, false
+            if(!senses[0] && !senses[1] && !senses[2]) {
+                // safe randomly pick any and move
+                //prob of moving to random space
+                moveRandomReactive(surroundingSpaces, random, 100);
+            }
+            // false, true, false
+            if(!senses[0] && senses[1] && !senses[2]) {
+                // prob of moving at random
+                moveRandomReactive(surroundingSpaces, random, 100);
+            }
+            // false, true, true
+            if(!senses[0] && senses[1] && senses[2]) {
+                // prob of moving at random
+                int[] startingPos = new int[2];
+                startingPos[0] = playerReactivePosition[0];
+                startingPos[1] = playerReactivePosition[1];
+                moveRandomReactive(surroundingSpaces, random, 100);
+                // check to see if we died
+                notDeadReactive = checkForAlive();
+                boolean gold = checkForGold();
+                if(!notDeadReactive){
+                    continue;
+                }else if(gold){
+                    break;
+                }else{
+                    reactiveSafe[playerReactivePosition[0]][playerReactivePosition[1]] = 1;
+                    reactiveFrontier[playerReactivePosition[0]][playerReactivePosition[1]] = 0;
+                    if(playerReactiveDirection == 0){
+                        moveReactive(startingPos,2);
+                    }else if(playerReactiveDirection == 1){
+                        moveReactive(startingPos,3);
+                    }else if(playerReactiveDirection == 2){
+                        moveReactive(startingPos,0);
+                    }else if(playerReactiveDirection == 3){
+                        moveReactive(startingPos,1);
+                    }
+                }
+            }
+            // false, false, true
+            if(!senses[0] && !senses[1] && senses[2]) {
+                // prob of moving at random
+                int[] startingPos = new int[2];
+                startingPos[0] = playerReactivePosition[0];
+                startingPos[1] = playerReactivePosition[1];
+                moveRandomReactive(surroundingSpaces, random, 100);
+                // check to see if we died
+                notDeadReactive = checkForAlive();
+                boolean gold = checkForGold();
+                if(!notDeadReactive){
+                    continue;
+                }else if(gold){
+                    break;
+                }else{
+                    // check for gold in space we moved if not it then go back
+                    reactiveSafe[playerReactivePosition[0]][playerReactivePosition[1]] = 1;
+                    reactiveFrontier[playerReactivePosition[0]][playerReactivePosition[1]] = 0;
+                    if(playerReactiveDirection == 0){
+                        moveReactive(startingPos,2);
+                    }else if(playerReactiveDirection == 1){
+                        moveReactive(startingPos,3);
+                    }else if(playerReactiveDirection == 2){
+                        moveReactive(startingPos,0);
+                    }else if(playerReactiveDirection == 3){
+                        moveReactive(startingPos,1);
+                    }
+                }
+            }
+
+            // check to see if we died for all senses except for the ones that can see a shimmer of gold
+            notDeadReactive = checkForAlive();
+            boolean gold = checkForGold();
+            if(!notDeadReactive){
+                continue;
+            }else if(gold){
+                break;
+            }else{
+                reactiveSafe[playerReactivePosition[0]][playerReactivePosition[1]] = 1;
+                reactiveFrontier[playerReactivePosition[0]][playerReactivePosition[1]] = 0;
+            }
+
+            //TODO Keep track of stats for Reactive (add [stat]++ where needed) Gabe
+        }
+    }
+
+    private boolean checkForGold() {
+        if(world.getFilledWorld()[playerReactivePosition[0]][playerReactivePosition[1]].equals("G")) {
+            points += 1000;
+            //teleport to safety
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    private boolean checkForAlive() {
+        if (reactiveWorld.getFilledWorld()[playerReactivePosition[0]][playerReactivePosition[1]].equals("W")) {
+            points -= 10000;
+            return false;
+        } else if (reactiveWorld.getFilledWorld()[playerReactivePosition[0]][playerReactivePosition[1]].equals("P")) {
+            points -= 10000;
+            return false;
+        } else{
+            return true;
+        }
+    }
+
+    private void moveRandomReactive(int[][] surroundingSpaces, Random random, int notAllowed) {
+        int numViableMoves = 0;
+        for(int[] space : surroundingSpaces){
+            if(space[0] != 100){
+                numViableMoves++;
+            }
+        }
+        int randomMove = 0;
+        boolean notViableMove = true;
+        while(notViableMove) {
+            randomMove = random.nextInt(numViableMoves);
+            if (surroundingSpaces[randomMove][0] != 100 && randomMove != notAllowed) {
+                notViableMove = false;
+            }
+        }
+        moveReactive(surroundingSpaces[randomMove], randomMove);
     }
 
     private String unify(String x, String y, String substList) {
@@ -346,7 +525,7 @@ public class ResolutionBased {
         }
     }
 
-    private int[] move(int[] destSpace, int destDirection) {
+    private int[] moveReasoning(int[] destSpace, int destDirection) {
         // need to add cost
         // facing the direction we need to be
         if (playerDirection == destDirection) {
@@ -398,9 +577,61 @@ public class ResolutionBased {
         }
     }
 
-    private int[][] getSurrounding() {
-        int pRow = playerPosition[0];
-        int pCol = playerPosition[1];
+    private int[] moveReactive(int[] destSpace, int destDirection) {
+        // need to add cost
+        // facing the direction we need to be
+        if(playerReactiveDirection == destDirection){
+            //lose a point for moving forward
+            //check if next space is obstacle
+            if(destSpace[0] == 100){
+                // moves forward into a border and explorer knows it cannot move there
+                return playerReactivePosition;
+            }
+            if (reactiveWorld.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")) {
+                reactivePoints -= 1;
+                return playerReactivePosition;
+            } else {
+                reactivePoints -= 1;
+                return destSpace;
+            }
+            // need to turn 180 degrees
+        } else if (Math.abs(playerReactiveDirection - destDirection) == 2) {
+            // lose two points for turning
+            reactivePoints -= 2;
+            if(destSpace[0] == 100){
+                reactivePoints -= 1;
+                return playerReactivePosition;
+            }
+            playerReactiveDirection = destDirection;
+            //lose a point for moving forward
+            if (reactiveWorld.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")) {
+                reactivePoints -= 1;
+                return playerReactivePosition;
+            } else {
+                reactivePoints -= 1;
+                return destSpace;
+            }
+            // need to turn 90 degrees
+        } else {
+            reactivePoints -= 1;
+            if(destSpace[1] == 100){
+                reactivePoints -= 1;
+                return playerReactivePosition;
+            }
+            playerReactiveDirection = destDirection;
+            if (reactiveWorld.getFilledWorld()[destSpace[0]][destSpace[1]].equals("O")) {
+                reactivePoints -= 1;
+                return playerReactivePosition;
+            } else {
+                reactivePoints -= 1;
+                return destSpace;
+            }
+        }
+    }
+
+    private int[][] getSurrounding(int[] pPosition) {
+        int pRow = pPosition[0];
+        int pCol = pPosition[1];
 
         int[] north = new int[2];
         int[] east = new int[2];
