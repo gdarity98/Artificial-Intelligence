@@ -12,9 +12,9 @@ public class MainProject2 {
         }
 
         double[] p = new double[3];
-        p[0] = 0.15;
-        p[1] = 0.15;
-        p[2] = 0.15;
+        p[0] = 0.08;
+        p[1] = 0.05;
+        p[2] = 0.05;
 
         //creating rules and game
         //TODO NEED TO MAKE BASE RULES
