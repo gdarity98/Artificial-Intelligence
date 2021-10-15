@@ -72,7 +72,16 @@ public class ResolutionBased {
             //need to smell wumpus, feel wind, see shimmer
             boolean[] senses = sense(surroundingSpaces);
             //System.out.println(senses);
-           
+
+            //TODO get a rule based on the senses to send into reasoning? Brock
+            //if smell, then there exists a wumpus in the surroundingSpaces
+            //if feel, then there exists a pit in the surroundingSpaces
+            //if shimmer, then there exists a gold in the surroundingSpaces
+
+            //if not smell, then there does not exists a wumpus in the surroundingSpaces
+            //if not feel, then there does not exists a pit in the surroundingSpaces
+            //if not shimmer, then there does not exists a gold in the surroundingSpaces
+            //if not(shimmer and smell and feel), then the surroundingSpaces are safe
              
           if (senses[2]) { //gold
                 System.out.println(2);
@@ -135,15 +144,6 @@ public class ResolutionBased {
             System.out.println(81);
                 safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
             }
-            //TODO get a rule based on the senses to send into reasoning? Brock
-            //if smell, then there exists a wumpus in the surroundingSpaces
-            //if feel, then there exists a pit in the surroundingSpaces
-            //if shimmer, then there exists a gold in the surroundingSpaces
-
-            //if not smell, then there does not exists a wumpus in the surroundingSpaces
-            //if not feel, then there does not exists a pit in the surroundingSpaces
-            //if not shimmer, then there does not exists a gold in the surroundingSpaces
-            //if not(shimmer and smell and feel), then the surroundingSpaces are safe
 
             //TODO call resolution based search method (unification) Kyler
 
@@ -283,6 +283,7 @@ public class ResolutionBased {
 
             //to move back to if necessary
             int[] startingPos = new int[2];
+
             // true, false, false
             if(senses[0] && !senses[1] && !senses[2]) {
                 if(prob == 0){ // prob of shooting
@@ -402,8 +403,8 @@ public class ResolutionBased {
                     }
                 }
             }
-            System.out.println("RUNNING");
-            //TODO Keep track of stats for Reactive (add [stat]++ where needed) Gabe
+            //System.out.println("RUNNING");
+            //Keep track of stats for Reactive (add [stat]++ where needed) Gabe
         }
     }
 
