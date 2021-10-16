@@ -11,7 +11,7 @@ Gabe Darity:
          getSurrounding - gets the adjacent spaces to the space you are in
          checkForAliveReactive - checks if the space the explorer moved to has a wumpus, pit, or if it is safe
          checkForGoldReactive - checks if the space the explorer is in has gold
-         getStats - returns int[] of stats so we can average and get data
+         getAvgStatsFull - returns double[] of averaged stats for reactive so we can get data
          printStats - prints the stats
 
 Brock Lehnen:
