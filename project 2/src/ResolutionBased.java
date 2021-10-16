@@ -83,67 +83,67 @@ public class ResolutionBased {
             //if not shimmer, then there does not exists a gold in the surroundingSpaces
             //if not(shimmer and smell and feel), then the surroundingSpaces are safe
              
-          if (senses[2]) { //gold
-                System.out.println(2);
-           
-            goldFound++;
-            }
-            if(senses[1]){ //pit
-                System.out.println(3);
-             safe[playerPosition.length][playerPosition.length] = 0;
-            }
-            if (senses[0] && senses[1]){ //pit and wumpus
-                System.out.println(4);
-           
-           safe[playerPosition.length][playerPosition.length] = 0;
-            }
-            if (senses[0]){ //wumpus
-                System.out.println(5);
-            
-            safe[playerPosition.length][playerPosition.length] = 0;
-            }
-            if (senses[0] && senses[2]){ //wumpus and gold
-            System.out.println(6);
-            
-               
-            }
-            if (senses[1] && senses[2]){ //pit and gold
-                System.out.println(7);
-           
-            }
-            if (senses[0] && senses[1] && senses[2]){ //all three
-            System.out.println(8);
-            
-            }
-            if (!senses[2]) { //not gold
-                System.out.println(21);
-            
-           
-            }
-            if(!senses[1]){ //not pit
-                System.out.println(31);
-        
-            }
-            if (!senses[0] && !senses[1]){ //not pit or wumpus
-                System.out.println(41);
-             safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
-            }
-            if (!senses[0]){ //not wumpus
-                System.out.println(51);
-          
-            }
-            if (!senses[0] && !senses[2]){ //not gold or wumpus
-            System.out.println(61);
-               
-            }
-            if (!senses[1] && !senses[2]){ //not gold or pit
-                System.out.println(71);
-                
-            }
-            if (!senses[0] && !senses[1] && !senses[2]){ //none of them
-            System.out.println(81);
-                safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
-            }
+//          if (senses[2]) { //gold
+//                System.out.println(2);
+//
+//            goldFound++;
+//            }
+//            if(senses[1]){ //pit
+//                System.out.println(3);
+//             safe[playerPosition.length][playerPosition.length] = 0;
+//            }
+//            if (senses[0] && senses[1]){ //pit and wumpus
+//                System.out.println(4);
+//
+//           safe[playerPosition.length][playerPosition.length] = 0;
+//            }
+//            if (senses[0]){ //wumpus
+//                System.out.println(5);
+//
+//            safe[playerPosition.length][playerPosition.length] = 0;
+//            }
+//            if (senses[0] && senses[2]){ //wumpus and gold
+//            System.out.println(6);
+//
+//
+//            }
+//            if (senses[1] && senses[2]){ //pit and gold
+//                System.out.println(7);
+//
+//            }
+//            if (senses[0] && senses[1] && senses[2]){ //all three
+//            System.out.println(8);
+//
+//            }
+//            if (!senses[2]) { //not gold
+//                System.out.println(21);
+//
+//
+//            }
+//            if(!senses[1]){ //not pit
+//                System.out.println(31);
+//
+//            }
+//            if (!senses[0] && !senses[1]){ //not pit or wumpus
+//                System.out.println(41);
+//             safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
+//            }
+//            if (!senses[0]){ //not wumpus
+//                System.out.println(51);
+//
+//            }
+//            if (!senses[0] && !senses[2]){ //not gold or wumpus
+//            System.out.println(61);
+//
+//            }
+//            if (!senses[1] && !senses[2]){ //not gold or pit
+//                System.out.println(71);
+//
+//            }
+//            if (!senses[0] && !senses[1] && !senses[2]){ //none of them
+//            System.out.println(81);
+//                safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
+//            }
 
             //TODO call resolution based search method (unification) Kyler
 
@@ -262,7 +262,8 @@ public class ResolutionBased {
 
     private void runReactive() {
         boolean notDeadReactive = true;
-        while(notDeadReactive){
+        int timesRun = 0;
+        while(notDeadReactive && timesRun < 5000){
             int[][] surroundingSpaces = getSurrounding(playerReactivePosition);
             //[smell, feel, shimmer]
             boolean[] senses = sense(surroundingSpaces);
@@ -403,6 +404,7 @@ public class ResolutionBased {
                     }
                 }
             }
+            timesRun++;
             //System.out.println("RUNNING");
             //Keep track of stats for Reactive (add [stat]++ where needed) Gabe
         }
@@ -470,7 +472,7 @@ public class ResolutionBased {
             }
 
             //if we have explored all the surrounding spaces this lets us go back to them and choose randomly
-            if(numNotAllowed == 4){
+            if(numNotAllowed >= 4){
                 viableSpace = true;
             }
 
@@ -778,8 +780,8 @@ public class ResolutionBased {
     }
 
     public void printStatsFull(){
-        System.out.println("Reasoning:");
-        printStatForType(cellsExplored, goldFound, pitDeath, wumpusDeath, wumpusKilled, points);
+//        System.out.println("Reasoning:");
+//        printStatForType(cellsExplored, goldFound, pitDeath, wumpusDeath, wumpusKilled, points);
 
         System.out.println("Reactive:");
         printStatForType(reactiveCellsExplored, reactiveGoldFound, reactivePitDeath, reactiveWumpusDeath, reactiveWumpusKilled, reactivePoints);
@@ -792,6 +794,18 @@ public class ResolutionBased {
         System.out.println("Wumpus Deaths: " + wumpusDeath);
         System.out.println("Wumpus Killed: " + wumpusKilled);
         System.out.println("Points: " + points);
+    }
+
+    public double[] getAvgStatsFull(int i){
+        //cellsExplored, goldFound, pitDeath, wumpusDeath, wumpusKill, Points
+        double[] stats = new double[6];
+        stats[0] = (double)reactiveCellsExplored / i;
+        stats[1] = (double)reactiveGoldFound / i;
+        stats[2] = (double)reactivePitDeath / i;
+        stats[3] = (double)reactiveWumpusDeath / i;
+        stats[4] = (double)reactiveWumpusKilled / i;
+        stats[5] = (double)reactivePoints / i;
+        return stats;
     }
 
     public int getCellsExplored() {
