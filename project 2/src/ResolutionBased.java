@@ -73,10 +73,6 @@ public class ResolutionBased {
         while (notDead) {
             //need to smell wumpus, feel wind, see shimmer
             boolean[] senses = sense(surroundingSpaces);
-<<<<<<< HEAD
-            //System.out.println(senses);
-
-=======
             System.out.println(senses);
 
 
@@ -141,78 +137,6 @@ public class ResolutionBased {
                 System.out.println(81);
                 safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
             }
->>>>>>> KylerBranch
-            //TODO get a rule based on the senses to send into reasoning? Brock
-            //if smell, then there exists a wumpus in the surroundingSpaces
-            //if feel, then there exists a pit in the surroundingSpaces
-            //if shimmer, then there exists a gold in the surroundingSpaces
-
-            //if not smell, then there does not exists a wumpus in the surroundingSpaces
-            //if not feel, then there does not exists a pit in the surroundingSpaces
-            //if not shimmer, then there does not exists a gold in the surroundingSpaces
-            //if not(shimmer and smell and feel), then the surroundingSpaces are safe
-             
-//          if (senses[2]) { //gold
-//                System.out.println(2);
-//
-//            goldFound++;
-//            }
-//            if(senses[1]){ //pit
-//                System.out.println(3);
-//             safe[playerPosition.length][playerPosition.length] = 0;
-//            }
-//            if (senses[0] && senses[1]){ //pit and wumpus
-//                System.out.println(4);
-//
-//           safe[playerPosition.length][playerPosition.length] = 0;
-//            }
-//            if (senses[0]){ //wumpus
-//                System.out.println(5);
-//
-//            safe[playerPosition.length][playerPosition.length] = 0;
-//            }
-//            if (senses[0] && senses[2]){ //wumpus and gold
-//            System.out.println(6);
-//
-//
-//            }
-//            if (senses[1] && senses[2]){ //pit and gold
-//                System.out.println(7);
-//
-//            }
-//            if (senses[0] && senses[1] && senses[2]){ //all three
-//            System.out.println(8);
-//
-//            }
-//            if (!senses[2]) { //not gold
-//                System.out.println(21);
-//
-//
-//            }
-//            if(!senses[1]){ //not pit
-//                System.out.println(31);
-//
-//            }
-//            if (!senses[0] && !senses[1]){ //not pit or wumpus
-//                System.out.println(41);
-//             safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
-//            }
-//            if (!senses[0]){ //not wumpus
-//                System.out.println(51);
-//
-//            }
-//            if (!senses[0] && !senses[2]){ //not gold or wumpus
-//            System.out.println(61);
-//
-//            }
-//            if (!senses[1] && !senses[2]){ //not gold or pit
-//                System.out.println(71);
-//
-//            }
-//            if (!senses[0] && !senses[1] && !senses[2]){ //none of them
-//            System.out.println(81);
-//                safe[surroundingSpaces.length][surroundingSpaces.length] = 0;
-//            }
 
             /*Senses key:
             0 = Wumpus (W)
@@ -221,9 +145,9 @@ public class ResolutionBased {
             3 = SAFE?  (S)
              */
 
-//            String holderX = "";
-//            String holderY = "";
-//            String subst = unify(holderX, holderY, "");
+            String holderX = "";
+            String holderY = "";
+            String subst = unify(holderX, holderY, "");
 
             InferenceBuilder.makeInference(subst, rulesList, world, this);
 
@@ -322,7 +246,7 @@ public class ResolutionBased {
     private void runReactive() {
         boolean notDeadReactive = true;
         int timesRun = 0;
-        while(notDeadReactive && timesRun < 5000){
+        while (notDeadReactive && timesRun < 5000) {
             int[][] surroundingSpaces = getSurrounding(playerReactivePosition);
             //[smell, feel, shimmer]
             boolean[] senses = sense(surroundingSpaces);
@@ -332,10 +256,10 @@ public class ResolutionBased {
             //prioritize unexploredSpaces
             int[] exploredSpaces = new int[4];
             Arrays.fill(exploredSpaces, 100);
-            for(int i = 0; i < surroundingSpaces.length; i++){
+            for (int i = 0; i < surroundingSpaces.length; i++) {
                 int[] aSpace = surroundingSpaces[i];
-                if(aSpace[0] != 100){
-                    if(reactiveFrontier[aSpace[0]][aSpace[1]] == 0){
+                if (aSpace[0] != 100) {
+                    if (reactiveFrontier[aSpace[0]][aSpace[1]] == 0) {
                         exploredSpaces[i] = i;
                     }
                 }
@@ -348,116 +272,68 @@ public class ResolutionBased {
             if (senses[0] && !senses[1] && !senses[2]) {
                 if (prob == 0) { // prob of shooting
                     //if hear scream move in any direction but that one
-<<<<<<< HEAD
-                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection,reactiveNumArrows);
+                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection, reactiveNumArrows);
                     reactiveNumArrows--;
-                    if(scream){
+                    if (scream) {
                         reactiveWumpusKilled++;
                         moveRandomReactive(surroundingSpaces, random, playerReactiveDirection, exploredSpaces);
                         // else move in that direction
-                    }else{
+                    } else {
                         playerReactivePosition = moveReactive(surroundingSpaces[playerReactiveDirection], playerReactiveDirection);
                     }
-                }else{ // prob of moving at random
-                    moveRandomReactive(surroundingSpaces, random, 100, exploredSpaces);
-=======
-                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection);
-                    if (scream) {
-                        moveRandomReactive(surroundingSpaces, random, playerReactiveDirection);
-                        // else move in that direction
-                    } else {
-                        moveReactive(surroundingSpaces[playerReactiveDirection], playerReactiveDirection);
-                    }
                 } else { // prob of moving at random
-                    moveRandomReactive(surroundingSpaces, random, 100);
->>>>>>> KylerBranch
+                    moveRandomReactive(surroundingSpaces, random, 100, exploredSpaces);
                 }
             }
             // true, true, false
             if (senses[0] && senses[1] && !senses[2]) {
                 if (prob == 0) { // prob of shooting
                     //if hear scream move in any direction but that one
-<<<<<<< HEAD
-                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection,reactiveNumArrows);
+                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection, reactiveNumArrows);
                     reactiveNumArrows--;
-                    if(scream){
+                    if (scream) {
                         reactiveWumpusKilled++;
                         moveRandomReactive(surroundingSpaces, random, playerReactiveDirection, exploredSpaces);
-                    // else move in that direction
-                    }else{
-                        playerReactivePosition = moveReactive(surroundingSpaces[playerReactiveDirection], playerReactiveDirection);
-                    }
-                }else{ // prob of moving at random
-                    moveRandomReactive(surroundingSpaces, random, 100, exploredSpaces);
-=======
-                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection);
-                    if (scream) {
-                        moveRandomReactive(surroundingSpaces, random, playerReactiveDirection);
                         // else move in that direction
                     } else {
-                        moveReactive(surroundingSpaces[playerReactiveDirection], playerReactiveDirection);
+                        playerReactivePosition = moveReactive(surroundingSpaces[playerReactiveDirection], playerReactiveDirection);
                     }
                 } else { // prob of moving at random
-                    moveRandomReactive(surroundingSpaces, random, 100);
->>>>>>> KylerBranch
+                    moveRandomReactive(surroundingSpaces, random, 100, exploredSpaces);
                 }
             }
             // true, false, true
             if (senses[0] && !senses[1] && senses[2]) {
                 if (prob == 0) { // prob of shooting
                     //if hear scream move in any direction but that one
-<<<<<<< HEAD
                     boolean scream = shoot(playerReactivePosition, playerReactiveDirection, reactiveNumArrows);
                     reactiveNumArrows--;
-                    if(scream){
+                    if (scream) {
                         reactiveWumpusKilled++;
                         moveRandomReactive(surroundingSpaces, random, playerReactiveDirection, exploredSpaces);
                         // else move in that direction
-                    }else{
+                    } else {
                         playerReactivePosition = moveReactive(surroundingSpaces[playerReactiveDirection], playerReactiveDirection);
                     }
-                }else{ // prob of moving at random
-                    moveRandomReactive(surroundingSpaces, random, 100, exploredSpaces);
-=======
-                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection);
-                    if (scream) {
-                        moveRandomReactive(surroundingSpaces, random, playerReactiveDirection);
-                        // else move in that direction
-                    } else {
-                        moveReactive(surroundingSpaces[playerReactiveDirection], playerReactiveDirection);
-                    }
                 } else { // prob of moving at random
-                    moveRandomReactive(surroundingSpaces, random, 100);
->>>>>>> KylerBranch
+                    moveRandomReactive(surroundingSpaces, random, 100, exploredSpaces);
                 }
             }
             // true, true, true
             if (senses[0] && senses[1] && senses[2]) {
                 if (prob == 0) { // prob of shooting
                     //if hear scream move in any direction but that one
-<<<<<<< HEAD
-                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection,reactiveNumArrows);
+                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection, reactiveNumArrows);
                     reactiveNumArrows--;
-                    if(scream){
+                    if (scream) {
                         reactiveWumpusKilled++;
                         moveRandomReactive(surroundingSpaces, random, playerReactiveDirection, exploredSpaces);
                         // else move in that direction
-                    }else{
+                    } else {
                         playerReactivePosition = moveReactive(surroundingSpaces[playerReactiveDirection], playerReactiveDirection);
                     }
-                }else{ // prob of moving at random
-                    moveRandomReactive(surroundingSpaces, random, 100, exploredSpaces);
-=======
-                    boolean scream = shoot(playerReactivePosition, playerReactiveDirection);
-                    if (scream) {
-                        moveRandomReactive(surroundingSpaces, random, playerReactiveDirection);
-                        // else move in that direction
-                    } else {
-                        moveReactive(surroundingSpaces[playerReactiveDirection], playerReactiveDirection);
-                    }
                 } else { // prob of moving at random
-                    moveRandomReactive(surroundingSpaces, random, 100);
->>>>>>> KylerBranch
+                    moveRandomReactive(surroundingSpaces, random, 100, exploredSpaces);
                 }
             }
             // false, false, false
@@ -476,13 +352,10 @@ public class ResolutionBased {
                 // prob of moving at random
                 startingPos[0] = playerReactivePosition[0];
                 startingPos[1] = playerReactivePosition[1];
-<<<<<<< HEAD
                 moveRandomReactive(surroundingSpaces, random, 100, exploredSpaces);
-=======
-                moveRandomReactive(surroundingSpaces, random, 100);
                 // check to see if we died
-                notDeadReactive = checkForAlive();
-                boolean gold = checkForGold();
+                notDeadReactive = checkForAliveReactive();
+                boolean gold = checkForGoldReactive();
                 if (!notDeadReactive) {
                     continue;
                 } else if (gold) {
@@ -500,29 +373,16 @@ public class ResolutionBased {
                         moveReactive(startingPos, 1);
                     }
                 }
->>>>>>> KylerBranch
             }
             // false, false, true
             if (!senses[0] && !senses[1] && senses[2]) {
                 // prob of moving at random
                 startingPos[0] = playerReactivePosition[0];
                 startingPos[1] = playerReactivePosition[1];
-<<<<<<< HEAD
-                moveRandomReactive(surroundingSpaces, random, 100, exploredSpaces);
-            }
-
-            // check to see if we died for all senses except for the ones that can see a shimmer of gold
-            notDeadReactive = checkForAliveReactive();
-            boolean gold = checkForGoldReactive();
-            if(!notDeadReactive){
-                continue;
-            }else if(gold){
-                reactiveGoldFound++;
-=======
-                moveRandomReactive(surroundingSpaces, random, 100);
+                moveRandomReactive(surroundingSpaces, random, 100,exploredSpaces);
                 // check to see if we died
-                notDeadReactive = checkForAlive();
-                boolean gold = checkForGold();
+                notDeadReactive = checkForAliveReactive();
+                boolean gold = checkForGoldReactive();
                 if (!notDeadReactive) {
                     continue;
                 } else if (gold) {
@@ -544,27 +404,26 @@ public class ResolutionBased {
             }
 
             // check to see if we died for all senses except for the ones that can see a shimmer of gold
-            notDeadReactive = checkForAlive();
-            boolean gold = checkForGold();
+            notDeadReactive = checkForAliveReactive();
+            boolean gold = checkForGoldReactive();
             if (!notDeadReactive) {
                 continue;
             } else if (gold) {
->>>>>>> KylerBranch
                 break;
             } else {
                 reactiveSafe[playerReactivePosition[0]][playerReactivePosition[1]] = 1;
                 reactiveFrontier[playerReactivePosition[0]][playerReactivePosition[1]] = 0;
                 reactiveCellsExplored++;
-                if(senses[2]){
+                if (senses[2]) {
                     // if we did sense gold, but we moved away then go back
-                    if(playerReactiveDirection == 0){
-                        playerReactivePosition = moveReactive(startingPos,2);
-                    }else if(playerReactiveDirection == 1){
-                        playerReactivePosition = moveReactive(startingPos,3);
-                    }else if(playerReactiveDirection == 2){
-                        playerReactivePosition = moveReactive(startingPos,0);
-                    }else if(playerReactiveDirection == 3){
-                        playerReactivePosition = moveReactive(startingPos,1);
+                    if (playerReactiveDirection == 0) {
+                        playerReactivePosition = moveReactive(startingPos, 2);
+                    } else if (playerReactiveDirection == 1) {
+                        playerReactivePosition = moveReactive(startingPos, 3);
+                    } else if (playerReactiveDirection == 2) {
+                        playerReactivePosition = moveReactive(startingPos, 0);
+                    } else if (playerReactiveDirection == 3) {
+                        playerReactivePosition = moveReactive(startingPos, 1);
                     }
                 }
             }
@@ -574,15 +433,9 @@ public class ResolutionBased {
         }
     }
 
-<<<<<<< HEAD
     private boolean checkForGoldReactive() {
-        if(world.getFilledWorld()[playerReactivePosition[0]][playerReactivePosition[1]].equals("G")) {
-            reactivePoints += 1000;
-=======
-    private boolean checkForGold() {
         if (world.getFilledWorld()[playerReactivePosition[0]][playerReactivePosition[1]].equals("G")) {
-            points += 1000;
->>>>>>> KylerBranch
+            reactivePoints += 1000;
             //teleport to safety
             return true;
         } else {
@@ -604,63 +457,50 @@ public class ResolutionBased {
         }
     }
 
-<<<<<<< HEAD
     private void moveRandomReactive(int[][] surroundingSpaces, Random random, int notAllowedDirection, int[] notAllowedSpace) {
         int highIndexOfViableMoves = 0;
-        for(int i = 0; i < surroundingSpaces.length; i++){
+        for (int i = 0; i < surroundingSpaces.length; i++) {
             int[] space = surroundingSpaces[i];
-            if(space[0] != 100){
-                highIndexOfViableMoves = i;
-=======
-    private void moveRandomReactive(int[][] surroundingSpaces, Random random, int notAllowed) {
-        int numViableMoves = 0;
-        for (int[] space : surroundingSpaces) {
             if (space[0] != 100) {
-                numViableMoves++;
->>>>>>> KylerBranch
+                highIndexOfViableMoves = i;
+
             }
         }
 
         int randomMove = 0;
         boolean notViableMove = true;
-<<<<<<< HEAD
-        while(notViableMove) {
+        while (notViableMove) {
             boolean viableSpace = true;
-            randomMove = random.nextInt(highIndexOfViableMoves+1);
-            for(int i = 0; i < notAllowedSpace.length; i++){
-                if(randomMove == notAllowedSpace[i]) {
+            randomMove = random.nextInt(highIndexOfViableMoves + 1);
+            for (int i = 0; i < notAllowedSpace.length; i++) {
+                if (randomMove == notAllowedSpace[i]) {
                     viableSpace = false;
                     break;
                 }
             }
             int numNotAllowed = 0;
             int uniqueNotAllowedDirection = 0;
-            for(int i = 0; i < notAllowedSpace.length; i++){
-                if(notAllowedSpace[i] != 100){
+            for (int i = 0; i < notAllowedSpace.length; i++) {
+                if (notAllowedSpace[i] != 100) {
                     numNotAllowed++;
                 }
-                if(surroundingSpaces[i][0] == 100){
+                if (surroundingSpaces[i][0] == 100) {
                     numNotAllowed++;
                 }
-                if(notAllowedSpace[i] != notAllowedDirection){
+                if (notAllowedSpace[i] != notAllowedDirection) {
                     uniqueNotAllowedDirection++;
                 }
             }
-            if(uniqueNotAllowedDirection == 4){
+            if (uniqueNotAllowedDirection == 4) {
                 numNotAllowed++;
             }
 
             //if we have explored all the surrounding spaces this lets us go back to them and choose randomly
-            if(numNotAllowed >= 4){
+            if (numNotAllowed >= 4) {
                 viableSpace = true;
             }
 
             if (surroundingSpaces[randomMove][0] != 100 && randomMove != notAllowedDirection && viableSpace) {
-=======
-        while (notViableMove) {
-            randomMove = random.nextInt(numViableMoves);
-            if (surroundingSpaces[randomMove][0] != 100 && randomMove != notAllowed) {
->>>>>>> KylerBranch
                 notViableMove = false;
             }
         }
@@ -694,105 +534,57 @@ public class ResolutionBased {
     //returns if you heard a scream or not
     private boolean shoot(int[] playerPosition, int playerDirection, int numArrows) {
         //check each space to direction facing for a wumpus or obstacle or border(end of array)
-<<<<<<< HEAD
-        if(numArrows > 0){
-            if(playerDirection == 0){//if player direction is 0 then need to decrease playerPosition[0] until <=/==/idk 0 lol
-                for(int i = playerPosition[0]; i >= 0; i--){
+        if (numArrows > 0) {
+            if (playerDirection == 0) {//if player direction is 0 then need to decrease playerPosition[0] until <=/==/idk 0 lol
+                for (int i = playerPosition[0]; i >= 0; i--) {
                     //if find obstacle first then return false
                     //if find wumpus first then return true
                     //if find end of array first then return false
-                    if(world.getFilledWorld()[i][playerPosition[1]].equals("O")){
+                    if (world.getFilledWorld()[i][playerPosition[1]].equals("O")) {
                         return false;
-                    }else if(world.getFilledWorld()[i][playerPosition[1]].equals("W")){
+                    } else if (world.getFilledWorld()[i][playerPosition[1]].equals("W")) {
                         return true;
                     }
                 }
                 return false;
-            }else if(playerDirection == 2){//if player direction is 2 then need to increase playPos[0] until 4
-                for(int i = playerPosition[0]; i <= 4; i++){
+            } else if (playerDirection == 2) {//if player direction is 2 then need to increase playPos[0] until 4
+                for (int i = playerPosition[0]; i <= 4; i++) {
                     //if find obstacle first then return false
                     //if find wumpus first then return true
                     //if find end of array first then return false
-                    if(world.getFilledWorld()[i][playerPosition[1]].equals("O")){
+                    if (world.getFilledWorld()[i][playerPosition[1]].equals("O")) {
                         return false;
-                    }else if(world.getFilledWorld()[i][playerPosition[1]].equals("W")){
+                    } else if (world.getFilledWorld()[i][playerPosition[1]].equals("W")) {
                         return true;
                     }
                 }
                 return false;
-            }else if(playerDirection == 3){//if player direction is 3 then need to decrease playPos[1] until 0
-                for(int i = playerPosition[1]; i >= 0; i--){
+            } else if (playerDirection == 3) {//if player direction is 3 then need to decrease playPos[1] until 0
+                for (int i = playerPosition[1]; i >= 0; i--) {
                     //if find obstacle first then return false
                     //if find wumpus first then return true
                     //if find end of array first then return false
-                    if(world.getFilledWorld()[playerPosition[0]][i].equals("O")){
+                    if (world.getFilledWorld()[playerPosition[0]][i].equals("O")) {
                         return false;
-                    }else if(world.getFilledWorld()[playerPosition[0]][i].equals("W")){
+                    } else if (world.getFilledWorld()[playerPosition[0]][i].equals("W")) {
                         return true;
                     }
                 }
                 return false;
-            }else{ //if player direction is 1 then need to increase playPos[1] until 4
-                for(int i = playerPosition[1]; i <= 4; i++){
+            } else { //if player direction is 1 then need to increase playPos[1] until 4
+                for (int i = playerPosition[1]; i <= 4; i++) {
                     //if find obstacle first then return false
                     //if find wumpus first then return true
                     //if find end of array first then return false
-                    if(world.getFilledWorld()[playerPosition[0]][i].equals("O")){
+                    if (world.getFilledWorld()[playerPosition[0]][i].equals("O")) {
                         return false;
-                    }else if(world.getFilledWorld()[playerPosition[0]][i].equals("W")){
+                    } else if (world.getFilledWorld()[playerPosition[0]][i].equals("W")) {
                         return true;
                     }
-=======
-        if (playerDirection == 0) {//if player direction is 0 then need to decrease playerPosition[0] until <=/==/idk 0 lol
-            for (int i = playerPosition[0]; i >= 0; i--) {
-                //if find obstacle first then return false
-                //if find wumpus first then return true
-                //if find end of array first then return false
-                if (world.getFilledWorld()[i][playerPosition[1]].equals("O")) {
-                    return false;
-                } else if (world.getFilledWorld()[i][playerPosition[1]].equals("W")) {
-                    return true;
-                }
-            }
-            return false;
-        } else if (playerDirection == 2) {//if player direction is 2 then need to increase playPos[0] until 4
-            for (int i = playerPosition[0]; i <= 4; i++) {
-                //if find obstacle first then return false
-                //if find wumpus first then return true
-                //if find end of array first then return false
-                if (world.getFilledWorld()[i][playerPosition[1]].equals("O")) {
-                    return false;
-                } else if (world.getFilledWorld()[i][playerPosition[1]].equals("W")) {
-                    return true;
-                }
-            }
-            return false;
-        } else if (playerDirection == 3) {//if player direction is 3 then need to decrease playPos[1] until 0
-            for (int i = playerPosition[1]; i >= 0; i--) {
-                //if find obstacle first then return false
-                //if find wumpus first then return true
-                //if find end of array first then return false
-                if (world.getFilledWorld()[playerPosition[0]][i].equals("O")) {
-                    return false;
-                } else if (world.getFilledWorld()[playerPosition[0]][i].equals("W")) {
-                    return true;
-                }
-            }
-            return false;
-        } else { //if player direction is 1 then need to increase playPos[1] until 4
-            for (int i = playerPosition[1]; i <= 4; i++) {
-                //if find obstacle first then return false
-                //if find wumpus first then return true
-                //if find end of array first then return false
-                if (world.getFilledWorld()[playerPosition[0]][i].equals("O")) {
-                    return false;
-                } else if (world.getFilledWorld()[playerPosition[0]][i].equals("W")) {
-                    return true;
->>>>>>> KylerBranch
                 }
                 return false;
             }
-        }else{
+        } else {
             return false;
         }
     }
@@ -1011,15 +803,10 @@ public class ResolutionBased {
         return senses;
     }
 
-<<<<<<< HEAD
-    public void printStatsFull(){
+
+    public void printStatsFull() {
 //        System.out.println("Reasoning:");
 //        printStatForType(cellsExplored, goldFound, pitDeath, wumpusDeath, wumpusKilled, points);
-=======
-    public void printStatsFull() {
-        System.out.println("Reasoning:");
-        printStatForType(cellsExplored, goldFound, pitDeath, wumpusDeath, wumpusKilled, points);
->>>>>>> KylerBranch
 
         System.out.println("Reactive:");
         printStatForType(reactiveCellsExplored, reactiveGoldFound, reactivePitDeath, reactiveWumpusDeath, reactiveWumpusKilled, reactivePoints);
@@ -1034,15 +821,15 @@ public class ResolutionBased {
         System.out.println("Points: " + points);
     }
 
-    public double[] getAvgStatsFull(int i){
+    public double[] getAvgStatsFull(int i) {
         //cellsExplored, goldFound, pitDeath, wumpusDeath, wumpusKill, Points
         double[] stats = new double[6];
-        stats[0] = (double)reactiveCellsExplored / i;
-        stats[1] = (double)reactiveGoldFound / i;
-        stats[2] = (double)reactivePitDeath / i;
-        stats[3] = (double)reactiveWumpusDeath / i;
-        stats[4] = (double)reactiveWumpusKilled / i;
-        stats[5] = (double)reactivePoints / i;
+        stats[0] = (double) reactiveCellsExplored / i;
+        stats[1] = (double) reactiveGoldFound / i;
+        stats[2] = (double) reactivePitDeath / i;
+        stats[3] = (double) reactiveWumpusDeath / i;
+        stats[4] = (double) reactiveWumpusKilled / i;
+        stats[5] = (double) reactivePoints / i;
         return stats;
     }
 
