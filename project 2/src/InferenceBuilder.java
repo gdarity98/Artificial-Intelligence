@@ -22,6 +22,7 @@ public class InferenceBuilder {
         ArrayList<String[]> replace = new ArrayList<>();
         boolean impossible = true;
 
+        //Look to see if we are adding a possible rule
         if ((string1.contains("Wumpus")
                 || string1.contains("Stench")
                 || string1.contains("Glitter")
@@ -31,13 +32,16 @@ public class InferenceBuilder {
                 || string2.contains("Glitter")
                 || string2.contains("Breeze"))) {
             impossible = false;
+            //Make sure we aren't repeating ourselves and that we are using general rules
             if (!string1.equals(string2)) {
+                //unify
                 String[] replaceVar = UnifyVariables(string1, string2, resolutionBased);
                 replace.add(replaceVar);
                 return replace;
             }
         }
 
+        //If fail, fail upwards
         if (impossible) {
             throw new Exception("Can't Unify");
         } else {
@@ -45,6 +49,7 @@ public class InferenceBuilder {
         }
     }
 
+    //If we check against a rule with constants break out, If it has X or Y we swap out so that we have a location
     private static String[] UnifyVariables(String string1, String string2, ResolutionBased resolutionBased) {
         String[] replacement = new String[2];
 
@@ -69,6 +74,7 @@ public class InferenceBuilder {
                 replacement[1] = string2;
             }
         } else {
+            //Tried to unify a rule to a rule
             System.out.println("Unification on two variables!");
             System.exit(42);
         }
@@ -76,6 +82,7 @@ public class InferenceBuilder {
         return replacement;
     }
 
+    //Make a new rule and check to make sure it fits
     public static String ResolveNewRule(String string1, String string2, ResolutionBased resolutionBased) {
         try {
             ArrayList<String[]> substitution = Unify(string1, string2, resolutionBased);
@@ -92,6 +99,7 @@ public class InferenceBuilder {
         return newRule;
     }
 
+    //Add the new rules to the knowledge base
     public static String ResolveToKnowledge(String rule, World world) {
         String newRule = rule.toString();
 
@@ -133,7 +141,7 @@ public class InferenceBuilder {
         return newRule;
     }
 
-    //TODO This method needs some filler and then we comment
+    //Recursivly call a new rule to the knowledge base and add it if it does not exist
     public static String resolveLoop(String assumption, ArrayList<String> knowledge, World world, ResolutionBased resolutionBased) {
         for (String string : knowledge) {
             String resolution = ResolveNewRule(assumption, string, resolutionBased);
