@@ -17,3 +17,7 @@ Gabe Darity:
 Brock Lehnen:
 
 Kyler Gappa:
+    InferenceBuilder.java
+    Rules.java
+    ResolutionBased - How to decide what gets made into an inference
+    unify methods
