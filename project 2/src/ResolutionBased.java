@@ -162,11 +162,6 @@ public class ResolutionBased {
                 rules = rules + "; " + unify(rules, ("Smell(" + playerPosition[0] + "," + playerPosition[1] + ")"), "");
             }
 
-
-            //TODO make choice based on rules (resolution) Brock
-            //move to safe space, if multiple we move to one of them randomly
-            //if we can't find a safe space or no rule gives safe space then move randomly
-
             // move choice
             int[] destSpace = new int[2];
             //example movement choice for testing
@@ -197,9 +192,6 @@ public class ResolutionBased {
             boolean scream = shoot(playerPosition, playerDirection, numArrows);
             numArrows--;
             //unification
-
-            //TODO Keep track of stats (add [stat]++ where needed) Kyler
-            //this break is just so that I can test reactive without sitting in a repeating loop
             break;
         }
 
