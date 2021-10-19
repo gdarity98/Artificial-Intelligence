@@ -54,7 +54,6 @@ public class MainProject2 {
         p[9][2] = 0.00;
 
         //creating rules and game
-        //TODO NEED TO MAKE BASE RULES
         String rules = "Wumpus(X,Y);Smell(X,Y);Breeze(X,Y);Glitter(X,Y);Safe(X,Y);notSafe(X,Y);";
 
 

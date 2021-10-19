@@ -507,6 +507,7 @@ public class ResolutionBased {
         playerReactivePosition = moveReactive(surroundingSpaces[randomMove], randomMove);
     }
 
+    //This never actually should be called but is legacy code
     private String unify(String x, String y, String substList) {
         if (substList.equals("FAILURE")) {
             return "";
@@ -516,17 +517,12 @@ public class ResolutionBased {
             return unifyVariables(x, y, substList);
         } else if (!rules.contains(y)) {
             return unifyVariables(y, x, substList);
-//        Find out if x and y are ???compounds??? and return
-//        } else if (false /* COMPOUND?(x) && COMPOUND?(y) */) {
-//            return unify(x, y, unify(x, y, substList)); //pseudo: UNIFY(ARGS[x], ARGS[y], UNIFY(OP[x], OP[y], THETA)) THETA = substList
-//        } else if (false/* LIST?(x) && LIST?(y) */) {
-//            return unify(x, y, unify(x, y, substList)); //pseudo: UNIFY(REST[x], REST[y], UNIFY(FIRST[x], FIRST[y], THETA)) THETA = substList
         } else {
             return "FAILURE";
         }
     }
 
-    //TODO Figure out what the hell this algorithm is supposed to do
+    //Legacy code
     private String unifyVariables(String var, String x, String subRules) {
         return "THIS DOES NOT WORK YET";
     }
@@ -805,9 +801,6 @@ public class ResolutionBased {
 
 
     public void printStatsFull() {
-//        System.out.println("Reasoning:");
-//        printStatForType(cellsExplored, goldFound, pitDeath, wumpusDeath, wumpusKilled, points);
-
         System.out.println("Reactive:");
         printStatForType(reactiveCellsExplored, reactiveGoldFound, reactivePitDeath, reactiveWumpusDeath, reactiveWumpusKilled, reactivePoints);
     }
