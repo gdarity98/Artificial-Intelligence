@@ -15,6 +15,8 @@ Gabe Darity:
          printStats - prints the stats
 
 Brock Lehnen:
+    Setting up Senses logic statements for unification
+    revised private boolean sense 
 
 Kyler Gappa:
     InferenceBuilder.java
