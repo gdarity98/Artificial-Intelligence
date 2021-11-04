@@ -22,7 +22,7 @@ public class BayesianNetwork {
             }else if(line.contains("probability")){
                 //System.out.println("P");
                 Probability p = new Probability(line, variableDictionary);
-                while(!scanner.hasNext("}\r")){
+                while(!scanner.hasNext("}\r") && !scanner.hasNext("}")){
                     String pInfo = scanner.next();
                     p.addProb(pInfo);
                 }
