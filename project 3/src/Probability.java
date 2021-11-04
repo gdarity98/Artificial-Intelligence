@@ -8,6 +8,7 @@ public class Probability {
     public Probability(String name, Hashtable<String, Variable> variableDictionary){
         name = name.replace("probability ( ", "");
         name = name.replace(" ) {", "");
+        name = name.replace("\r","");
         pName = name;
         if(pName.contains("|")){
             String child = name.substring(0, name.indexOf("|"));
@@ -15,7 +16,15 @@ public class Probability {
             Variable var = variableDictionary.get(child);
             String parents = name.substring(name.indexOf("|")+1);
             parents = parents.replace(" ", "");
-            var.setParents(parents.split(","));
+            if(parents.contains(",")){
+                parents = parents.replace("\r", "");
+                var.setParents(parents.split(","));
+            }else{
+                parents = parents.replace("\r", "");
+                String[] parentsA = new String[1];
+                parentsA[0] = parents;
+                var.setParents(parentsA);
+            }
         }else{
             Variable var = variableDictionary.get(pName);
             var.setParents(null);

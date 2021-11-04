@@ -7,6 +7,7 @@ public class Variable {
     public Variable(String name){
         name = name.replace("variable ", "");
         name = name.replace(" {", "");
+        name = name.replace("\r","");
         varName = name;
     }
     
@@ -18,6 +19,7 @@ public class Variable {
         sbInfo.replace(0,5,"");
         info = sbInfo.toString().replace(" };","");;
         info = info.replace(" ","");
+        info.replace("\r", "");
         stateTypes = info.split(",");
         //System.out.println(stateTypes[0]);
     }
