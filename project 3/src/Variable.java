@@ -19,7 +19,7 @@ public class Variable {
         sbInfo.replace(0,5,"");
         info = sbInfo.toString().replace(" };","");;
         info = info.replace(" ","");
-        info.replace("\r", "");
+        info = info.replace("\r", "");
         stateTypes = info.split(",");
         //System.out.println(stateTypes[0]);
     }
