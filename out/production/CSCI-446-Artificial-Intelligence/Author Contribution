@@ -1,0 +1,25 @@
+Gabe Darity:
+    World.java
+    MainProject2.java
+    runReactive - implementation of reactive agent
+    move methods - implementation of moving (including affects to points)
+    shoot method - implementation of shoot (returns if scream heard from shot and reduces arrows)
+    Game set up in runGame method
+    Keep track of stats in Reactive
+    sense method to get percepts
+    other helper functions:
+         getSurrounding - gets the adjacent spaces to the space you are in
+         checkForAliveReactive - checks if the space the explorer moved to has a wumpus, pit, or if it is safe
+         checkForGoldReactive - checks if the space the explorer is in has gold
+         getAvgStatsFull - returns double[] of averaged stats for reactive so we can get data
+         printStats - prints the stats
+
+Brock Lehnen:
+    Setting up Senses logic statements for unification
+    revised private boolean sense 
+
+Kyler Gappa:
+    InferenceBuilder.java
+    Rules.java
+    ResolutionBased - How to decide what gets made into an inference
+    unify methods
