@@ -31,8 +31,35 @@ public class BayesianNetwork {
         }
     }
 
-    public void eliminateVar(){
+   public void eliminateVar(){
+    Variable factors[];
 
+
+    
+  variableDictionary.forEach((k, v) -> {
+              //System.out.println("Key : " + k + ", Value : " + v);
+              //factor[] = factors[probabilityDictionary] + factors[];
+              if (variableDictionary.containsKey(probabilityDictionary) == true){
+                    
+                    // sumout(k,v)
+              }
+            });
+    
+        
+    
+    }
+    
+    public void sumout(String string, Variable var){
+     variableDictionary.forEach((k, v) -> {
+        if (variableDictionary.isEmpty() || variableDictionary.contains(var)){
+            variableDictionary.remove(k);
+        }
+     
+     });
+
+}
+    public void marginilize(){
+        
     }
 
     public void gibbsSample(){
