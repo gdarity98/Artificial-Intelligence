@@ -132,3 +132,22 @@ public class GibbsAsk implements BayesSampleInference {
 	// END-BayesSampleInference
 	//
 }
+
+
+
+
+
+
+
+BP=HIGH
+LVFAILURE= P(LVFALILURE) -> True .05, False .95
+StrokeVOLUME = .5
+HR = LOW, MED, HIGH -> LOW .33 
+!= P(STROKE | HYPOVOL)
+
+
+General Probability name, cpt, State from evidence, Value from double array
+
+
+
+

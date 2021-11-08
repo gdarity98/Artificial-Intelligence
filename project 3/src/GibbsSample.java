@@ -77,28 +77,33 @@ TAKEN FROM GABE:
         //This is a janky way to da it, but I think it works properly
 
         for (Variable variable : currentState.values()) {
+            int seedMax = 0;
             for (int i = 0; i < evidenceNames.length; i++) {
                 if (variable.varName.equals(evidenceNames[i])) {
                     variable.currentState = evidenceValues[i];
                 } else if (variable.parents == null) {
                     Double[] distribution = probabilityNetwork.get(variable.varName).cptDictionary.get("table");
-                    int seedMax = 0;
                     for (Double aDouble : distribution) {
-                        if (seedMax / 100 <= aDouble) {
+                        double compare = (double) seedMax / 100;
+                        if (compare <= aDouble) {
                             seedMax = (int) (aDouble * 100);
                         }
                     }
-                    double guessedValue = random.nextInt(seedMax);
+                    int guessedValue = random.nextInt(seedMax);
+                    double compare = (double) (seedMax / 100);
                     if (distribution.length == 2) {
-                        if (guessedValue / 100 <= distribution[1]) {
+                        if (compare <= distribution[1]) {
                             variable.currentState = variable.stateTypes[0];
                         } else {
                             variable.currentState = variable.stateTypes[1];
                         }
                     } else {
+                        boolean setValue = false;
                         for (int k = 0; k < distribution.length; k++) {
-                            if (guessedValue / 100 <= distribution[k]) {
+                            if (compare <= distribution[k] && !setValue) {
+                                System.out.println(k);
                                 variable.currentState = variable.stateTypes[k];
+                                setValue = true;
                             }
                         }
                     }
@@ -115,14 +120,43 @@ TAKEN FROM GABE:
         for (int i = 0; i < countLoops; i++) {
             for (Variable variable : currentState.values()) {
                 for (int j = 0; j < evidenceNames.length; j++) {
-                    if (variable.varName.equals(evidenceNames[i])) {
-                        variable.currentState = evidenceValues[i];
-                    } else {
-                        //TODO: Make a random fucking guess based on the fucking probability
-                        // make sure the state is updated to reflect the guess
-                        // Count the amount of times the wanted Variable/s are given
-                        // send that shit upwards and make it someone elses problem
+                    if (variable.varName.equals(evidenceNames[j])) {
+                        variable.currentState = evidenceValues[j];
+                        break;
                     }
+                    //TODO: Make a random fucking guess based on the fucking probability
+                    // make sure the state is updated to reflect the guess
+                    // Count the amount of times the wanted Variable/s are given
+                    // send that shit upwards and make it someone elses problem
+                }
+                if (variable.parents == null) {
+                    Double[] distribution = probabilityNetwork.get(variable.varName).cptDictionary.get("table");
+                    int seedMax = 0;
+                    double compare = 0.0;
+                    boolean setValue = false;
+                    for (Double aDouble : distribution) {
+                        compare = (double) seedMax / 100;
+                        if (compare <= aDouble) {
+                            seedMax = (int) (aDouble * 100);
+                        }
+                    }
+                    double guessedValue = random.nextInt(seedMax);
+                    if (distribution.length == 2) {
+                        if (compare <= distribution[1]) {
+                            variable.currentState = variable.stateTypes[0];
+                        } else {
+                            variable.currentState = variable.stateTypes[1];
+                        }
+                    } else {
+                        for (int j = 0; j < distribution.length; j++) {
+                            if (compare <= distribution[j] && !setValue) {
+                                setValue = true;
+                                variable.currentState = variable.stateTypes[j];
+                            }
+                        }
+                    }
+                } else {
+
                 }
             }
         }
