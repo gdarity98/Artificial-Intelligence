@@ -1,7 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.LinkedList;
 import java.util.Scanner;
 
 public class BayesianNetwork {
@@ -48,6 +48,7 @@ public class BayesianNetwork {
     }
 
     public void gibbsSample(String[] nameOfEvidence, String[] valueOfEvidence) {
+        Enumeration<String> keys = variableDictionary.keys();
         GibbsSample gibbsSample = new GibbsSample(probabilityDictionary, variableDictionary, nameOfEvidence, valueOfEvidence, 10000);
         gibbsSample.GibbsAsk();
 //        gibbsSample();

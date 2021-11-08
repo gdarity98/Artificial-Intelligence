@@ -3,6 +3,7 @@ public class Variable {
     public int numStates = 0;
     public String[] stateTypes;
     public String[] parents = new String[1];
+    public String currentState;
 
     public Variable(String name) {
         name = name.replace("variable ", "");
@@ -28,4 +29,5 @@ public class Variable {
     public void setParents(String[] parents) {
         this.parents = parents;
     }
+
 }
