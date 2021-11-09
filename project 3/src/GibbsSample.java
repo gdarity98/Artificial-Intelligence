@@ -1,8 +1,3 @@
-import java.util.Hashtable;
-import java.util.Objects;
-import java.util.Random;
-
-public class GibbsSample {
 /*  Function Gibbs-Ask(X, evidence, bayesNet, N(umberOfLoops???) returns an estimate of R(X|e)
         local variables: C, a vector of counts for each value of X, init to 0
                          Z, the non-evidence variables in bayesNet
@@ -14,37 +9,23 @@ public class GibbsSample {
         return NORMALIZE(C)
 */
 
-/*
-???
-NORMALIZE
-    add probability of each state up
-    then divide each value by the total
-    i.e. probabilities come out to <.12, .08>
-        .12+.08 = .2
-        .12/.2 = .6
-        .08/.2 = .4
-        the true prob is <.6,.4>
-*/
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Objects;
+import java.util.Random;
 
-/*
-TAKEN FROM GABE:
- Implemented the BayesianNetwork from the .bif files
--BayesianNetwork contains two dictionaries: variableDict, probabilityDict
--variableDict contains all the nodes of the graph in the form of a Variable class. Each Variable contains a string list of its parents keys. This should be helpful in finding the Markov Blanket.
--probabilityDict contains all the conditionalProbabilityTables (CPTs) for a conditional probability. The keys for probabilityDict are the general conditional probability. Example probabilityDict keys from child.bif, "BirthAsphyxia" and "HypDistrib | DuctFlow, CardiacMixing". The returned object is a Probability class .
--These CPTs are stored in a dictionary within the Probability class. Where the key for the CPT is the given evidence value (Example for "Birth Asphyxia" would be Key "table", for  "HypeDistrib | DuctFlow, CardiacMixing" would be key "Lt_to_Rt, None") and the returned object is a Double[] with the probabilities.
--All data held in these classes are public for easy access.
-*/
-
+public class GibbsSample {
     String[] evidenceNames;
     String[] evidenceValues;
+    String[] whatToLookAt;
     Hashtable<String, Probability> probabilityNetwork;
     Hashtable<String, Variable> variableNetwork;
     int countLoops;
 
-    public GibbsSample(Hashtable<String, Probability> probabilityDictionary, Hashtable<String, Variable> variableDictionary, String[] nameOfEvidence, String[] valueOfEvidence, int countLoops) {
+    public GibbsSample(Hashtable<String, Probability> probabilityDictionary, Hashtable<String, Variable> variableDictionary, String[] nameOfEvidence, String[] valueOfEvidence, int countLoops, String[] whatToLookAt) {
         this.probabilityNetwork = probabilityDictionary;
         this.variableNetwork = variableDictionary;
+        this.whatToLookAt = whatToLookAt;
         this.evidenceNames = nameOfEvidence;
         this.evidenceValues = valueOfEvidence;
         this.countLoops = countLoops;
@@ -53,10 +34,10 @@ TAKEN FROM GABE:
 
     // Possibly useless code: Variable variable, Hashtable<String, Variable> evidence, Hashtable<String, Probability> bayesNet, int loopCount) {
 
-    public void GibbsAsk() {
+    public BayesianNetwork GibbsAsk() {
         Random random = new Random();
         random.setSeed(System.currentTimeMillis());
-        double[] numberOfRepetitions = new double[5];
+        double[] numberOfRepetitions = new double[20];
         Hashtable<String, Variable> evidence = new Hashtable<>();
         Hashtable<String, Variable> guess = variableNetwork;
         Hashtable<String, Variable> currentState = variableNetwork;
@@ -89,7 +70,7 @@ TAKEN FROM GABE:
                             seedMax = (int) (aDouble * 100);
                         }
                     }
-                    int guessedValue = random.nextInt(seedMax);
+
                     double compare = (double) (seedMax / 100);
                     if (distribution.length == 2) {
                         if (compare <= distribution[1]) {
@@ -101,7 +82,6 @@ TAKEN FROM GABE:
                         boolean setValue = false;
                         for (int k = 0; k < distribution.length; k++) {
                             if (compare <= distribution[k] && !setValue) {
-                                System.out.println(k);
                                 variable.currentState = variable.stateTypes[k];
                                 setValue = true;
                             }
@@ -124,10 +104,6 @@ TAKEN FROM GABE:
                         variable.currentState = evidenceValues[j];
                         break;
                     }
-                    //TODO: Make a random fucking guess based on the fucking probability
-                    // make sure the state is updated to reflect the guess
-                    // Count the amount of times the wanted Variable/s are given
-                    // send that shit upwards and make it someone elses problem
                 }
                 if (variable.parents == null) {
                     Double[] distribution = probabilityNetwork.get(variable.varName).cptDictionary.get("table");
@@ -140,7 +116,7 @@ TAKEN FROM GABE:
                             seedMax = (int) (aDouble * 100);
                         }
                     }
-                    double guessedValue = random.nextInt(seedMax);
+
                     if (distribution.length == 2) {
                         if (compare <= distribution[1]) {
                             variable.currentState = variable.stateTypes[0];
@@ -156,11 +132,64 @@ TAKEN FROM GABE:
                         }
                     }
                 } else {
+                    String[] parentsValue = new String[variable.parents.length];
+                    String lookupString = "";
+                    String probLookup = "";
+                    Enumeration<String> keys = variableNetwork.keys();
 
+                    for (int j = 0; j < parentsValue.length; j++) {
+                        parentsValue[j] = variable.parents[j];
+                        probLookup = probLookup + ", " + variable.parents[j];
+                    }
+
+                    for (int j = 0; j < parentsValue.length; j++) {
+                        if (j == 0) {
+                            lookupString = parentsValue[j];
+                        } else {
+                            lookupString = lookupString + ", " + parentsValue[j];
+                        }
+                    }
+                    Double[] distribution = new Double[20];
+                    //distribution = probabilityNetwork.get(variable.varName + " | " + probLookup).cptDictionary.get(lookupString);
+                    probabilityNetwork.keys();
+                    int seedMax = 0;
+                    double compare = 0.0;
+                    boolean setValue = false;
+                    for (Double aDouble : distribution) {
+                        compare = (double) seedMax / 100;
+                        if (compare <= aDouble) {
+                            seedMax = (int) (aDouble * 100);
+                        }
+                    }
+
+                    if (distribution.length == 2) {
+                        if (compare <= distribution[1]) {
+                            variable.currentState = variable.stateTypes[0];
+                        } else {
+                            variable.currentState = variable.stateTypes[1];
+                        }
+                    } else {
+                        for (int j = 0; j < distribution.length; j++) {
+                            if (compare <= distribution[j] && !setValue) {
+                                setValue = true;
+                                variable.currentState = variable.stateTypes[j];
+                            }
+                        }
+                    }
+
+                }
+                for (int j = 0; j < evidenceNames.length; j++) {
+                    if (variable.varName.equals(evidenceNames[j])) {
+                        variable.currentState = evidenceValues[j];
+                        break;
+                    }
                 }
             }
         }
+        BayesianNetwork bayesianNetwork = new BayesianNetwork(currentState, probabilityNetwork);
+        return bayesianNetwork;
     }
+}
 
 
 //        double[] doubleArray = new double[bayesNet.size()];
@@ -181,8 +210,7 @@ TAKEN FROM GABE:
 //    }
 
 
-    //TODO: Normalize this so it is actually readable back to data
+//TODO: Normalize this so it is actually readable back to data
 
-    //TODO: Push to main branch
+//TODO: Push to main branch
 
-}

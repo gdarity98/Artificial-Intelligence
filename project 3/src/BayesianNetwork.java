@@ -32,25 +32,22 @@ public class BayesianNetwork {
         }
     }
 
+    public BayesianNetwork(Hashtable<String, Variable> variableDictionary, Hashtable<String, Probability> probabilityDictionary) {
+        this.variableDictionary = variableDictionary;
+        this.probabilityDictionary = probabilityDictionary;
+    }
+
     public void eliminateVar() {
 
     }
 
-    public void gibbsSample() {
-        //TODO: Fix this up so it calls right
-        //alarms new evidence LIst HRBP=HIGH
-
-//        for (int i = 0; i < probabilityDictionary.size(); i++) {
-//            GibbsSample gibbsSample = new GibbsSample(probabilityDictionary, variableDictionary, variableDictionary/*this needs to be the nonEvidence*/, 5000);
-//
-//        }
-
-    }
-
-    public void gibbsSample(String[] nameOfEvidence, String[] valueOfEvidence) {
+    public BayesianNetwork gibbsSample(String[] nameOfEvidence, String[] valueOfEvidence, String[] whatToLookAt) {
         Enumeration<String> keys = variableDictionary.keys();
-        GibbsSample gibbsSample = new GibbsSample(probabilityDictionary, variableDictionary, nameOfEvidence, valueOfEvidence, 10000);
-        gibbsSample.GibbsAsk();
-//        gibbsSample();
+        GibbsSample gibbsSample = new GibbsSample(probabilityDictionary, variableDictionary, nameOfEvidence, valueOfEvidence, 10000, whatToLookAt);
+        BayesianNetwork bayesianNetwork = gibbsSample.GibbsAsk();
+        for (int i = 0; i < whatToLookAt.length; i++) {
+            System.out.println(whatToLookAt[i] + " " + bayesianNetwork.variableDictionary.get(whatToLookAt[i]).currentState);
+        }
+        return bayesianNetwork;
     }
 }

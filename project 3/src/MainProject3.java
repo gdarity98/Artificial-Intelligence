@@ -10,6 +10,7 @@ public class MainProject3 {
 
         String[] nameOfLittleAlarmEvidence = new String[3];
         String[] valueOfLittleAlarmEvidence = new String[3];
+        String[] whatToLookAt = new String[3];
 
         nameOfLittleAlarmEvidence[0] = "HRBP";
         nameOfLittleAlarmEvidence[1] = "CO";
@@ -19,7 +20,15 @@ public class MainProject3 {
         valueOfLittleAlarmEvidence[1] = "LOW";
         valueOfLittleAlarmEvidence[2] = "HIGH";
 
-        alarm.gibbsSample(nameOfLittleAlarmEvidence, valueOfLittleAlarmEvidence);
+        whatToLookAt[0] = "HYPOVOLEMIA";
+        whatToLookAt[1] = "LVFAILURE";
+        whatToLookAt[2] = "ERRLOWOUTPUT";
+
+        alarm.gibbsSample(nameOfLittleAlarmEvidence, valueOfLittleAlarmEvidence, whatToLookAt);
+
+        for (int i = 0; i < whatToLookAt.length; i++) {
+            System.out.println(whatToLookAt[i] + " " + alarm.variableDictionary.get(whatToLookAt[i]).currentState);
+        }
 
 
     }
