@@ -55,7 +55,6 @@ public class GibbsSample {
         }
 
         //Initialize current state with random guess for all non-evidence states
-        //This is a janky way to da it, but I think it works properly
 
         for (Variable variable : currentState.values()) {
             int seedMax = 0;
@@ -97,6 +96,9 @@ public class GibbsSample {
 
         }
 
+        //Repeat many times by taking the net and iterating over it using the current state of the net
+        //to calculate every non-evidence value
+        //pass that network back up and you should see the probability of the values you want to observe
         for (int i = 0; i < countLoops; i++) {
             for (Variable variable : currentState.values()) {
                 for (int j = 0; j < evidenceNames.length; j++) {
@@ -190,27 +192,4 @@ public class GibbsSample {
         return bayesianNetwork;
     }
 }
-
-
-//        double[] doubleArray = new double[bayesNet.size()];
-//        Hashtable<String, Variable> notEvidence = new Hashtable<String, Variable>();
-//        //make the order of variables into a big long order, Maybe just do bottom up for times sake?
-//        for (int i = 0; i < evidence.size(); i++) {
-//            Variable holder = evidence.get(i);
-//            notEvidence.remove(i);
-//        }
-//
-//        //set of the current world based on evidence
-//        Hashtable<Integer, Variable> currentState = new Hashtable<>();
-//        for (int i = 0; i < evidence.size(); i++) {
-//            currentState.put(i, evidence.get(i));
-//
-//        }
-
-//    }
-
-
-//TODO: Normalize this so it is actually readable back to data
-
-//TODO: Push to main branch
 

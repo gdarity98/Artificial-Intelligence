@@ -3,10 +3,10 @@ import java.io.FileNotFoundException;
 public class MainProject3 {
     public static void main(String args[]) throws FileNotFoundException {
         BayesianNetwork alarm = new BayesianNetwork("project 3/BNFiles/alarm.bif");
-//        BayesianNetwork child = new BayesianNetwork("project 3/BNFiles/child.bif");
-//        BayesianNetwork hailfinder = new BayesianNetwork("project 3/BNFiles/hailfinder.bif");
-//        BayesianNetwork insurance = new BayesianNetwork("project 3/BNFiles/insurance.bif");
-//        BayesianNetwork win95pts = new BayesianNetwork("project 3/BNFiles/win95pts.bif");
+        BayesianNetwork child = new BayesianNetwork("project 3/BNFiles/child.bif");
+        BayesianNetwork hailfinder = new BayesianNetwork("project 3/BNFiles/hailfinder.bif");
+        BayesianNetwork insurance = new BayesianNetwork("project 3/BNFiles/insurance.bif");
+        BayesianNetwork win95pts = new BayesianNetwork("project 3/BNFiles/win95pts.bif");
 
         String[] nameOfLittleAlarmEvidence = new String[3];
         String[] valueOfLittleAlarmEvidence = new String[3];
@@ -26,8 +26,8 @@ public class MainProject3 {
 
         alarm.gibbsSample(nameOfLittleAlarmEvidence, valueOfLittleAlarmEvidence, whatToLookAt);
 
-        for (int i = 0; i < whatToLookAt.length; i++) {
-            System.out.println(whatToLookAt[i] + " " + alarm.variableDictionary.get(whatToLookAt[i]).currentState);
+        for (String s : whatToLookAt) {
+            System.out.println(s + " " + alarm.variableDictionary.get(s).currentState);
         }
 
 
