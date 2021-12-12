@@ -1,5 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -96,16 +98,106 @@ public class RacingSimulator {
         }
     }
 
-    //TODO: Value Iteration algorithm
+    //TODO: Value Iteration algorithm (finished MDP SETUP)
     //Call updateAcceleration not setAcceleration
     //Call moveCar after updateAcceleration
     public void ValueIteration() {
 
-        //This is here for testing purpose and needs to be removed
-        for (int i = 0; i < 10000; i++) {
-            racecar.updateAccelerate(1, 1);
-            moveCar();
+        //Set Up MDP
+        // tunable paramaters
+        double bellmanErrorMagnitude = 0.001;
+        double gamma;
+        double noise;
+
+        // states and actions
+        // defining all actions
+        //a_x, a_y can be -1,0,1, the possible actions are we can currently take are accelerate, decelerate, and turn
+        int[][] actions = new int[9][2];
+        int[] action = new int[2];
+        //[1,1] accelerate
+        actions[0][0] = 1;
+        actions[0][1] = 1;
+        //[-1,-1] decelerate
+        actions[1][0] = -1;
+        actions[1][1] = -1;
+        // [0,0] no change
+        actions[2][0] = 0;
+        actions[2][1] = 0;
+        //turns
+        actions[3][0] = 0;
+        actions[3][1] = 1;
+        //[[0,-1]
+        actions[4][0] = 0;
+        actions[4][1] = -1;
+        //[1,0]
+        actions[5][0] = 1;
+        actions[5][1] = 0;
+        //[1,-1]
+        actions[6][0] = 1;
+        actions[6][1] = -1;
+        //[-1,0]
+        actions[7][0] = -1;
+        actions[7][1] = 0;
+        //[-1,1]
+        actions[8][0] = -1;
+        actions[8][1] = 1;
+
+        Hashtable<int[],int[][]> possibleStateActions = new Hashtable<int[],int[][]>();
+        // creating states and action assignment to states that have actions
+        int[][] states = new int[racetrack.length*racetrack[0].length][2];
+        int setUpX  = 0;
+        int stateCount = 0;
+        for(char[] row : racetrack){
+            int setUpY = 0;
+            for(char c : row){
+                int[] state = new int[2];
+                state[0] = setUpX;
+                state[1] = setUpY;
+                states[stateCount] = state;
+                if(c != '#' && c != 'F' && c != 'C'){
+                    possibleStateActions.put(state, actions);
+                }
+                stateCount++;
+                setUpY++;
+            }
+            setUpX++;
         }
+
+        // rewards
+        int[][] rewards = new int[racetrack.length][racetrack[0].length];
+        for(int rRow = 0; rRow < racetrack.length; rRow++){
+            for(int rCol = 0; rCol < racetrack[0].length; rCol++){
+                if(racetrack[rRow][rCol] == '#' || racetrack[rRow][rCol] == 'C'){
+                    rewards[rRow][rCol] = -1;
+                }else if(racetrack[rRow][rCol] == 'F'){
+                    rewards[rRow][rCol] = 1;
+                }else{
+                    rewards[rRow][rCol] = 0;
+                }
+            }
+        }
+
+        // initial policy (pick a random action for each state)
+        Random random = new Random();
+        Hashtable<int[],int[]> policy = new Hashtable<int[],int[]>();
+        Enumeration<int[]> keys = possibleStateActions.keys();
+        while(keys.hasMoreElements()){
+            int[] key = keys.nextElement();
+            int[][] stateAction = possibleStateActions.get(key);
+            int randomAction = random.nextInt(8);
+            int[] chosenAction = stateAction[randomAction];
+            policy.put(key,chosenAction);
+        }
+
+        // initial value function (if it is a state that has actions then give it a value)
+        Hashtable<int[], Integer> V = new Hashtable<int[], Integer>();
+        for(int[] state : states){
+            V.put(state,rewards[state[0]][state[1]]);
+        }
+
+        //TODO
+        // Value Iteration
+
     }
 
     //TODO: Model free learning algorithm
