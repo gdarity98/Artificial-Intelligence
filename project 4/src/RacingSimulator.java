@@ -102,6 +102,8 @@ public class RacingSimulator {
     //Call updateAcceleration not setAcceleration
     //Call moveCar after updateAcceleration
     public void ValueIteration() {
+        racecar.setAcceleration(0,0);
+        moveCar();
 
         //Set Up MDP
         // tunable paramaters
@@ -154,7 +156,7 @@ public class RacingSimulator {
                 state[0] = setUpX;
                 state[1] = setUpY;
                 states[stateCount] = state;
-                if(c != '#' && c != 'F' && c != 'C'){
+                if(c != '#' && c != 'F'){
                     possibleStateActions.put(state, actions);
                 }
                 stateCount++;
@@ -167,7 +169,7 @@ public class RacingSimulator {
         int[][] rewards = new int[racetrack.length][racetrack[0].length];
         for(int rRow = 0; rRow < racetrack.length; rRow++){
             for(int rCol = 0; rCol < racetrack[0].length; rCol++){
-                if(racetrack[rRow][rCol] == '#' || racetrack[rRow][rCol] == 'C'){
+                if(racetrack[rRow][rCol] == '#'){
                     rewards[rRow][rCol] = -1;
                 }else if(racetrack[rRow][rCol] == 'F'){
                     rewards[rRow][rCol] = 1;
