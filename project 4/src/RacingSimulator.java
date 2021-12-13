@@ -1,9 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Random;
-import java.util.Scanner;
+import java.lang.reflect.Array;
+import java.util.*;
 
 public class RacingSimulator {
     char[][] racetrack;
@@ -44,7 +42,11 @@ public class RacingSimulator {
         }
 
         Random random = new Random(System.currentTimeMillis());
-        startStateHolder = random.nextInt(countStartStates);
+        //changed to +1 because counting start states starting at 1 so need random int from 1-4 not 0-3
+        startStateHolder = random.nextInt(countStartStates)+1;
+//        if(startStateHolder == 0){
+//            System.out.println("I think this is an error");
+//        }
         racecar = new Racecar();
 
         for (int row = 0; row < rowSize; row++) {
@@ -61,19 +63,20 @@ public class RacingSimulator {
     }
 
     public void moveCar() {
-        racetrack[racecar.position[1]][racecar.position[0]] = 'C';
+        //racetrack[racecar.position[1]][racecar.position[0]] = 'C';
         bresenham(racecar.position[1], racecar.position[0], racecar.position[1] + racecar.speed[0],
                 racecar.position[0] + racecar.speed[1]);
+        racetrack[racecar.position[1]][racecar.position[0]] = 'C';
     }
 
     void bresenham(int x1, int y1, int x2, int y2) {
         int m_new = 2 * (y2 - y1);
         int slope_error_new = m_new - (x2 - x1);
 
-        for (int x = x1, y = y1; x < x2; x++) {
-            if (x > racetrack[y].length || y > racetrack.length) {
+        for (int x = x1, y = y1; x <= x2; x++) {
+            if (!(x >= racetrack.length) && !(y >= racetrack[0].length)) {
                 //System.out.print("(" + x + "," + y + ")\n");
-                if (racetrack[y][x] == '#') {
+                if (racetrack[x][y] == '#') {
                     if (!typeOfReset) {
                         racecar.position = new int[]{y, x};
                         racecar.speed = new int[]{0, 0};
@@ -101,20 +104,20 @@ public class RacingSimulator {
     //TODO: Value Iteration algorithm (finished MDP SETUP)
     //Call updateAcceleration not setAcceleration
     //Call moveCar after updateAcceleration
-    public void ValueIteration() {
-        racecar.setAcceleration(0,0);
+    public Hashtable<String, int[]> ValueIteration() {
+        //racecar.setAcceleration(0,0);
         moveCar();
 
         //Set Up MDP
         // tunable paramaters
         double bellmanErrorMagnitude = 0.001;
-        double gamma;
-        double noise;
+        double gamma = 0.9;
+        double noise = 0.1;
 
         // states and actions
         // defining all actions
         //a_x, a_y can be -1,0,1, the possible actions are we can currently take are accelerate, decelerate, and turn
-        int[][] actions = new int[9][2];
+        int[][] actions = new int[8][2];
         int[] action = new int[2];
         //[1,1] accelerate
         actions[0][0] = 1;
@@ -122,29 +125,26 @@ public class RacingSimulator {
         //[-1,-1] decelerate
         actions[1][0] = -1;
         actions[1][1] = -1;
-        // [0,0] no change
-        actions[2][0] = 0;
-        actions[2][1] = 0;
         //turns
-        actions[3][0] = 0;
-        actions[3][1] = 1;
+        actions[2][0] = 0;
+        actions[2][1] = 1;
         //[[0,-1]
-        actions[4][0] = 0;
-        actions[4][1] = -1;
+        actions[3][0] = 0;
+        actions[3][1] = -1;
         //[1,0]
-        actions[5][0] = 1;
-        actions[5][1] = 0;
+        actions[4][0] = 1;
+        actions[4][1] = 0;
         //[1,-1]
-        actions[6][0] = 1;
-        actions[6][1] = -1;
+        actions[5][0] = 1;
+        actions[5][1] = -1;
         //[-1,0]
-        actions[7][0] = -1;
-        actions[7][1] = 0;
+        actions[6][0] = -1;
+        actions[6][1] = 0;
         //[-1,1]
-        actions[8][0] = -1;
-        actions[8][1] = 1;
+        actions[7][0] = -1;
+        actions[7][1] = 1;
 
-        Hashtable<int[],int[][]> possibleStateActions = new Hashtable<int[],int[][]>();
+        Hashtable<String,int[][]> possibleStateActions = new Hashtable<String,int[][]>();
         // creating states and action assignment to states that have actions
         int[][] states = new int[racetrack.length*racetrack[0].length][2];
         int setUpX  = 0;
@@ -156,8 +156,8 @@ public class RacingSimulator {
                 state[0] = setUpX;
                 state[1] = setUpY;
                 states[stateCount] = state;
-                if(c != '#' && c != 'F'){
-                    possibleStateActions.put(state, actions);
+                if(c != '#'){
+                    possibleStateActions.put(Arrays.toString(state), actions);
                 }
                 stateCount++;
                 setUpY++;
@@ -166,7 +166,7 @@ public class RacingSimulator {
         }
 
         // rewards
-        int[][] rewards = new int[racetrack.length][racetrack[0].length];
+        double[][] rewards = new double[racetrack.length][racetrack[0].length];
         for(int rRow = 0; rRow < racetrack.length; rRow++){
             for(int rCol = 0; rCol < racetrack[0].length; rCol++){
                 if(racetrack[rRow][rCol] == '#'){
@@ -181,25 +181,86 @@ public class RacingSimulator {
 
         // initial policy (pick a random action for each state)
         Random random = new Random();
-        Hashtable<int[],int[]> policy = new Hashtable<int[],int[]>();
-        Enumeration<int[]> keys = possibleStateActions.keys();
+        Hashtable<String,int[]> policy = new Hashtable<String,int[]>();
+        Enumeration<String> keys = possibleStateActions.keys();
         while(keys.hasMoreElements()){
-            int[] key = keys.nextElement();
+            String key = keys.nextElement();
             int[][] stateAction = possibleStateActions.get(key);
-            int randomAction = random.nextInt(8);
+            int randomAction = random.nextInt(7);
             int[] chosenAction = stateAction[randomAction];
             policy.put(key,chosenAction);
         }
 
         // initial value function (if it is a state that has actions then give it a value)
-        Hashtable<int[], Integer> V = new Hashtable<int[], Integer>();
+        Hashtable<String, Double> V = new Hashtable<String, Double>();
         for(int[] state : states){
-            V.put(state,rewards[state[0]][state[1]]);
+            V.put(Arrays.toString(state),rewards[state[0]][state[1]]);
         }
 
-        //TODO
         // Value Iteration
+        int numIterations = 0;
+        while(true){
+            double largestChange = 0;
+            for(int[] state : states){
+                if(policy.containsKey(Arrays.toString(state))){
+                    double oldV = V.get(Arrays.toString(state));
+                    double newV = 0;
 
+                    //pick the best action
+                    int[][] actionsForState = possibleStateActions.get(Arrays.toString(state));
+                    for(int[] actionForState : actionsForState){
+
+                        //transition probability 20% do nothing 80% do something
+                        int[] acceleration = new int[2];
+                        boolean accelerationFail = false;
+                        double prob = random.nextDouble();
+                        if(prob <= 0.2){
+                            accelerationFail = true;
+                        }
+                        if(accelerationFail){
+                            acceleration[0] = 0;
+                            acceleration[0] = 0;
+                        }else{
+                            acceleration = actionForState;
+                        }
+                        racecar.position[0] = state[1];
+                        racecar.position[1] = state[0];
+                        int[] oldAcceleration = new int[2];
+                        oldAcceleration[0] = racecar.xAcceleration;
+                        oldAcceleration[1] = racecar.yAcceleration;
+                        racecar.updateAccelerate(acceleration[0], acceleration[1]);
+                        int[] oldPosition = new int[2];
+                        oldPosition[0] = racecar.position[0];
+                        oldPosition[1] = racecar.position[1];
+                        moveCar();
+                        int[] newPosition = new int[2];
+                        newPosition[0] = racecar.position[0];
+                        newPosition[1] = racecar.position[1];
+
+                        //need to get the state we are in if we take the action
+                        int[] keyFromPosition = new int[2];
+                        keyFromPosition[0] = newPosition[1];
+                        keyFromPosition[1] = newPosition[0];
+                        double v = rewards[state[0]][state[1]] + (gamma * ((1-noise)*V.get(Arrays.toString(keyFromPosition))));
+                        if(v > newV){
+                            newV = v;
+                            policy.put(Arrays.toString(state),acceleration);
+                        }
+                        racecar.position = oldPosition;
+                        racecar.setAcceleration(oldAcceleration[0], oldAcceleration[1]);
+                    }
+                    V.put(Arrays.toString(state), newV);
+                    largestChange = Math.max(largestChange, Math.abs(oldV - V.get(Arrays.toString(state))));
+                }
+            }
+            System.out.println("Iteration " + numIterations + ": " + largestChange);
+            //System.out.println("Iteration " + numIterations);
+            if(largestChange < bellmanErrorMagnitude){
+                break;
+            }
+            numIterations++;
+        }
+        return policy;
     }
 
     //TODO: Model free learning algorithm
