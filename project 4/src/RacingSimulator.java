@@ -101,7 +101,7 @@ public class RacingSimulator {
         }
     }
 
-    //TODO: Value Iteration algorithm (finished MDP SETUP)
+    //Value Iteration algorithm
     //Call updateAcceleration not setAcceleration
     //Call moveCar after updateAcceleration
     public Hashtable<String, int[]> ValueIteration() {
