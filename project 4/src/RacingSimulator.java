@@ -297,25 +297,25 @@ public class RacingSimulator {
     
     }
     
-      static List<Integer> GetPossibleNextStates(int x, int[][] T) {
+ static void Training(int[][] T, double[][] rewards, double[][] quality,
+  int goal, double discount, double learnRate, int max) //Putting it all together
+{
+    
+}
+    
+  static List<Integer> GetPossibleNextStates(int x, int[][] T) { //Giving possible next States
   List<Integer> result = new ArrayList<Integer>();
   for (int j = 0; j < T.length; ++j)
     if (T[x][j] == 1) result.add(j);
   return result;
 }
   
-  static int GetRandNextState(int x, int[][] T) {
+  static int GetRandNextState(int x, int[][] T) { //Getting next random state
   Random random = new Random();
   List<Integer> possibleNextStates = GetPossibleNextStates(x, T);
   int count = possibleNextStates.size();
   int index = random.nextInt(count);
   return index;
-}
-    
-    static void Training(int[][] T, double[][] rewards, double[][] quality,
-  int goal, double discount, double learnRate, int max)
-{
-    
 }
 /*  static int[][] CreateTrack(int length) {
   int T[][] = new int[length][length];
