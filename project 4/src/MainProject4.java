@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Hashtable;
 
 public class MainProject4 {
     public static void main(String[] args) throws FileNotFoundException {
@@ -11,12 +12,12 @@ public class MainProject4 {
         RacingSimulator oTrackSimulator = new RacingSimulator(otrack);
         RacingSimulator rTrackSimulator = new RacingSimulator(rtrack);
 
-        lTrackSimulator.ValueIteration();
+        Hashtable<String, int[]> lTrackPolicy = lTrackSimulator.ValueIteration();
         lTrackSimulator.ModelFree();
-        oTrackSimulator.ValueIteration();
+        Hashtable<String, int[]> oTrackPolicy = oTrackSimulator.ValueIteration();
         oTrackSimulator.ModelFree();
         rTrackSimulator.typeOfReset = true;
-        rTrackSimulator.ValueIteration();
+        Hashtable<String, int[]> rTrackPolicy = rTrackSimulator.ValueIteration();
         rTrackSimulator.ModelFree();
 
     }
