@@ -265,6 +265,29 @@ public class RacingSimulator {
 
     //TODO: Model free learning algorithm
     public void ModelFree() {
+        Random random = new Random();
+    int length = racetrack.length;
+    int goal ='F';
+    double discount = 0.5;
+    double learnRate = 0.5;
+    int max = 1000;
+    double[][] rewards = new double[racetrack.length][racetrack[0].length];
+        for(int rRow = 0; rRow < racetrack.length; rRow++){
+            for(int rCol = 0; rCol < racetrack[0].length; rCol++){
+                if(racetrack[rRow][rCol] == '#'){
+                    rewards[rRow][rCol] = -1;
+                }else if(racetrack[rRow][rCol] == 'F'){
+                    rewards[rRow][rCol] = 1;
+                }else{
+                    rewards[rRow][rCol] = 0;
+                }
+            }
+        }
+    double[][] quality = new double[length][];
+    for (int i = 0; i < length; ++i)
+    quality[i] = new double[length];
+    }
+   
 
     }
 
