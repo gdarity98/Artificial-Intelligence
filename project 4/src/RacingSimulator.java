@@ -264,13 +264,19 @@ public class RacingSimulator {
     }
 
     //TODO: Model free learning algorithm
-    public void ModelFree() {
-        Random random = new Random();
+      public void ModelFree() {
+    Random random = new Random();
     int length = racetrack.length;
     int goal ='F';
     double discount = 0.5;
     double learnRate = 0.5;
     int max = 1000;
+      int T[][] = new int[length][length];
+        for(int rRow = 0; rRow < length; rRow++){
+            for(int rCol = 0; rCol < length; rCol++){
+               T[rCol][rRow] = 1;
+            }
+        } 
     double[][] rewards = new double[racetrack.length][racetrack[0].length];
         for(int rRow = 0; rRow < racetrack.length; rRow++){
             for(int rCol = 0; rCol < racetrack[0].length; rCol++){
@@ -286,9 +292,25 @@ public class RacingSimulator {
     double[][] quality = new double[length][];
     for (int i = 0; i < length; ++i)
     quality[i] = new double[length];
+    
+   // Training(T, rewards, quality, goal, discount, learnRate, max);
+    
     }
-   
-
-    }
-
+    
+    static void Training(int[][] T, double[][] rewards, double[][] quality,
+  int goal, double discount, double learnRate, int max)
+{
+    
+}
+/*  static int[][] CreateTrack(int length) {
+  int T[][] = new int[length][length];
+for(int rRow = 0; rRow < length; rRow++){
+            for(int rCol = 0; rCol < length; rCol++){
+               T[rCol][rRow] = 1;
+            }
+        } 
+  
+  return T;
+  }
+*/
 }
