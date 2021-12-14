@@ -297,26 +297,27 @@ public class RacingSimulator {
     
     }
     
-    static void Training(int goal, double discount, double learnRate,
-  int max, double[][] rewards, int[][] T, double[][] quality) //Putting it all together
+  static void Training(int goal, double discount, double learnRate, int max, double[][] rewards, int[][] T, double[][] quality) //Putting it all together
 {
      Random random = new Random();
     for (int e = 0; e < max; ++e) {
-    int currentState = random.nextInt(rewards.length);
-while (true) {
-  int nextState = GetRandomNextState(currentState, T);
-  List<Integer> possibleNextStates = GetPossibleNextStates(nextState, T);
-  Double minQuality = Double.MIN_VALUE;
-  for (int j = 0; j < possibleNextStates.size(); ++j) {
-   int pns = possibleNextStates.get(j);  
-    double q = quality[nextState][pns];
-    if (q > minQuality) minQuality = q;
-  }
-   quality[currentState][nextState] =
-        ((1 - learnRate) * quality[currentState][nextState]) +
-        (learnRate * (rewards[currentState][nextState] + (discount * minQuality)));
-      currentState = nextState;
-      if (currentState == goal) break;
+        int currentState = random.nextInt(rewards.length);
+            while (true) {
+                 int nextState = GetRandomNextState(currentState, T);
+                 List<Integer> possibleNextStates = GetPossibleNextStates(nextState, T);
+                 Double minQuality = Double.MIN_VALUE;
+                 for (int j = 0; j < possibleNextStates.size(); ++j) {
+                    int pns = possibleNextStates.get(j);  
+                            double q = quality[nextState][pns];
+                            if (q > minQuality){
+                                minQuality = q;
+                            }
+                    }
+                quality[currentState][nextState] = ((1 - learnRate) * quality[currentState][nextState]) + (learnRate * (rewards[currentState][nextState] + (discount * minQuality)));
+                currentState = nextState;
+      if (currentState == goal) {
+          break;
+      }
     } 
   }
 } 
