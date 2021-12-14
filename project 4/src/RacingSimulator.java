@@ -301,10 +301,10 @@ public class RacingSimulator {
   int max, double[][] rewards, int[][] T, double[][] quality) //Putting it all together
 {
      Random random = new Random();
-    for (int epoch = 0; epoch < max; ++epoch) {
+    for (int e = 0; e < max; ++e) {
     int currentState = random.nextInt(rewards.length);
 while (true) {
-  int nextState = GetRandNextState(currentState, T);
+  int nextState = GetRandomNextState(currentState, T);
   List<Integer> possibleNextStates = GetPossibleNextStates(nextState, T);
   Double minQuality = Double.MIN_VALUE;
   for (int j = 0; j < possibleNextStates.size(); ++j) {
@@ -328,7 +328,7 @@ while (true) {
   return result;
 }
   
-  static int GetRandNextState(int x, int[][] T) { //Getting next random state
+  static int GetRandomNextState(int x, int[][] T) { //Getting next random state
   Random random = new Random();
   List<Integer> possibleNextStates = GetPossibleNextStates(x, T);
   int count = possibleNextStates.size();
