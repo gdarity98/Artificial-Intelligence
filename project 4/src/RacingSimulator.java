@@ -293,15 +293,33 @@ public class RacingSimulator {
     for (int i = 0; i < length; ++i)
     quality[i] = new double[length];
     
-   // Training(T, rewards, quality, goal, discount, learnRate, max);
+ Training(goal,discount,learnRate, max, rewards, T, quality);
     
     }
     
- static void Training(int[][] T, double[][] rewards, double[][] quality,
-  int goal, double discount, double learnRate, int max) //Putting it all together
+    static void Training(int goal, double discount, double learnRate,
+  int max, double[][] rewards, int[][] T, double[][] quality) //Putting it all together
 {
-    
-}
+     Random random = new Random();
+    for (int epoch = 0; epoch < max; ++epoch) {
+    int currentState = random.nextInt(rewards.length);
+while (true) {
+  int nextState = GetRandNextState(currentState, T);
+  List<Integer> possibleNextStates = GetPossibleNextStates(nextState, T);
+  Double minQuality = Double.MIN_VALUE;
+  for (int j = 0; j < possibleNextStates.size(); ++j) {
+   int pns = possibleNextStates.get(j);  
+    double q = quality[nextState][pns];
+    if (q > minQuality) minQuality = q;
+  }
+   quality[currentState][nextState] =
+        ((1 - learnRate) * quality[currentState][nextState]) +
+        (learnRate * (rewards[currentState][nextState] + (discount * minQuality)));
+      currentState = nextState;
+      if (currentState == goal) break;
+    } 
+  }
+} 
     
   static List<Integer> GetPossibleNextStates(int x, int[][] T) { //Giving possible next States
   List<Integer> result = new ArrayList<Integer>();
