@@ -43,7 +43,7 @@ public class RacingSimulator {
 
         Random random = new Random(System.currentTimeMillis());
         //changed to +1 because counting start states starting at 1 so need random int from 1-4 not 0-3
-        startStateHolder = random.nextInt(countStartStates)+1;
+        startStateHolder = random.nextInt(countStartStates) + 1;
 //        if(startStateHolder == 0){
 //            System.out.println("I think this is an error");
 //        }
@@ -144,19 +144,19 @@ public class RacingSimulator {
         actions[7][0] = -1;
         actions[7][1] = 1;
 
-        Hashtable<String,int[][]> possibleStateActions = new Hashtable<String,int[][]>();
+        Hashtable<String, int[][]> possibleStateActions = new Hashtable<String, int[][]>();
         // creating states and action assignment to states that have actions
-        int[][] states = new int[racetrack.length*racetrack[0].length][2];
-        int setUpX  = 0;
+        int[][] states = new int[racetrack.length * racetrack[0].length][2];
+        int setUpX = 0;
         int stateCount = 0;
-        for(char[] row : racetrack){
+        for (char[] row : racetrack) {
             int setUpY = 0;
-            for(char c : row){
+            for (char c : row) {
                 int[] state = new int[2];
                 state[0] = setUpX;
                 state[1] = setUpY;
                 states[stateCount] = state;
-                if(c != '#'){
+                if (c != '#') {
                     possibleStateActions.put(Arrays.toString(state), actions);
                 }
                 stateCount++;
@@ -167,13 +167,13 @@ public class RacingSimulator {
 
         // rewards
         double[][] rewards = new double[racetrack.length][racetrack[0].length];
-        for(int rRow = 0; rRow < racetrack.length; rRow++){
-            for(int rCol = 0; rCol < racetrack[0].length; rCol++){
-                if(racetrack[rRow][rCol] == '#'){
+        for (int rRow = 0; rRow < racetrack.length; rRow++) {
+            for (int rCol = 0; rCol < racetrack[0].length; rCol++) {
+                if (racetrack[rRow][rCol] == '#') {
                     rewards[rRow][rCol] = -1;
-                }else if(racetrack[rRow][rCol] == 'F'){
+                } else if (racetrack[rRow][rCol] == 'F') {
                     rewards[rRow][rCol] = 1;
-                }else{
+                } else {
                     rewards[rRow][rCol] = 0;
                 }
             }
@@ -181,46 +181,46 @@ public class RacingSimulator {
 
         // initial policy (pick a random action for each state)
         Random random = new Random();
-        Hashtable<String,int[]> policy = new Hashtable<String,int[]>();
+        Hashtable<String, int[]> policy = new Hashtable<String, int[]>();
         Enumeration<String> keys = possibleStateActions.keys();
-        while(keys.hasMoreElements()){
+        while (keys.hasMoreElements()) {
             String key = keys.nextElement();
             int[][] stateAction = possibleStateActions.get(key);
             int randomAction = random.nextInt(7);
             int[] chosenAction = stateAction[randomAction];
-            policy.put(key,chosenAction);
+            policy.put(key, chosenAction);
         }
 
         // initial value function (if it is a state that has actions then give it a value)
         Hashtable<String, Double> V = new Hashtable<String, Double>();
-        for(int[] state : states){
-            V.put(Arrays.toString(state),rewards[state[0]][state[1]]);
+        for (int[] state : states) {
+            V.put(Arrays.toString(state), rewards[state[0]][state[1]]);
         }
 
         // Value Iteration
         int numIterations = 0;
-        while(true){
+        while (true) {
             double largestChange = 0;
-            for(int[] state : states){
-                if(policy.containsKey(Arrays.toString(state))){
+            for (int[] state : states) {
+                if (policy.containsKey(Arrays.toString(state))) {
                     double oldV = V.get(Arrays.toString(state));
                     double newV = 0;
 
                     //pick the best action
                     int[][] actionsForState = possibleStateActions.get(Arrays.toString(state));
-                    for(int[] actionForState : actionsForState){
+                    for (int[] actionForState : actionsForState) {
 
                         //transition probability 20% do nothing 80% do something
                         int[] acceleration = new int[2];
                         boolean accelerationFail = false;
                         double prob = random.nextDouble();
-                        if(prob <= 0.2){
+                        if (prob <= 0.2) {
                             accelerationFail = true;
                         }
-                        if(accelerationFail){
+                        if (accelerationFail) {
                             acceleration[0] = 0;
                             acceleration[0] = 0;
-                        }else{
+                        } else {
                             acceleration = actionForState;
                         }
                         racecar.position[0] = state[1];
@@ -241,10 +241,10 @@ public class RacingSimulator {
                         int[] keyFromPosition = new int[2];
                         keyFromPosition[0] = newPosition[1];
                         keyFromPosition[1] = newPosition[0];
-                        double v = rewards[state[0]][state[1]] + (gamma * ((1-noise)*V.get(Arrays.toString(keyFromPosition))));
-                        if(v > newV){
+                        double v = rewards[state[0]][state[1]] + (gamma * ((1 - noise) * V.get(Arrays.toString(keyFromPosition))));
+                        if (v > newV) {
                             newV = v;
-                            policy.put(Arrays.toString(state),acceleration);
+                            policy.put(Arrays.toString(state), acceleration);
                         }
                         racecar.position = oldPosition;
                         racecar.setAcceleration(oldAcceleration[0], oldAcceleration[1]);
@@ -255,86 +255,85 @@ public class RacingSimulator {
             }
             System.out.println("Iteration " + numIterations + ": " + largestChange);
             //System.out.println("Iteration " + numIterations);
-            if(largestChange < bellmanErrorMagnitude){
+            if (largestChange < bellmanErrorMagnitude) {
                 break;
             }
             numIterations++;
         }
         return policy;
     }
-
-    //TODO: Model free learning algorithm
-      public void ModelFree() {
-    Random random = new Random();
-    int length = racetrack.length;
-    int goal ='F';
-    double discount = 0.5;
-    double learnRate = 0.5;
-    int max = 1000;
-      int T[][] = new int[length][length];
-        for(int rRow = 0; rRow < length; rRow++){
-            for(int rCol = 0; rCol < length; rCol++){
-               T[rCol][rRow] = 1;
+    
+    public void ModelFree() {
+        Random random = new Random();
+        int length = racetrack.length;
+        int goal = 'F';
+        double discount = 0.5;
+        double learnRate = 0.5;
+        int max = 1000;
+        int T[][] = new int[length][length];
+        for (int rRow = 0; rRow < length; rRow++) {
+            for (int rCol = 0; rCol < length; rCol++) {
+                T[rCol][rRow] = 1;
             }
-        } 
-    double[][] rewards = new double[racetrack.length][racetrack[0].length];
-        for(int rRow = 0; rRow < racetrack.length; rRow++){
-            for(int rCol = 0; rCol < racetrack[0].length; rCol++){
-                if(racetrack[rRow][rCol] == '#'){
+        }
+        double[][] rewards = new double[racetrack.length][racetrack[0].length];
+        for (int rRow = 0; rRow < racetrack.length; rRow++) {
+            for (int rCol = 0; rCol < racetrack[0].length; rCol++) {
+                if (racetrack[rRow][rCol] == '#') {
                     rewards[rRow][rCol] = -1;
-                }else if(racetrack[rRow][rCol] == 'F'){
+                } else if (racetrack[rRow][rCol] == 'F') {
                     rewards[rRow][rCol] = 1;
-                }else{
+                } else {
                     rewards[rRow][rCol] = 0;
                 }
             }
         }
-    double[][] quality = new double[length][];
-    for (int i = 0; i < length; ++i)
-    quality[i] = new double[length];
-    
- Training(goal,discount,learnRate, max, rewards, T, quality);
-    
+        double[][] quality = new double[length][];
+        for (int i = 0; i < length; ++i)
+            quality[i] = new double[length];
+
+        Training(goal, discount, learnRate, max, rewards, T, quality);
+
     }
-    
+
     static void Training(int goal, double discount, double learnRate,
-  int max, double[][] rewards, int[][] T, double[][] quality) //Putting it all together
-{
-     Random random = new Random();
-    for (int e = 0; e < max; ++e) {
-    int currentState = random.nextInt(rewards.length);
-while (true) {
-  int nextState = GetRandomNextState(currentState, T);
-  List<Integer> possibleNextStates = GetPossibleNextStates(nextState, T);
-  Double minQuality = Double.MIN_VALUE;
-  for (int j = 0; j < possibleNextStates.size(); ++j) {
-   int pns = possibleNextStates.get(j);  
-    double q = quality[nextState][pns];
-    if (q > minQuality) minQuality = q;
-  }
-   quality[currentState][nextState] =
-        ((1 - learnRate) * quality[currentState][nextState]) +
-        (learnRate * (rewards[currentState][nextState] + (discount * minQuality)));
-      currentState = nextState;
-      if (currentState == goal) break;
-    } 
-  }
-} 
-    
-  static List<Integer> GetPossibleNextStates(int x, int[][] T) { //Giving possible next States
-  List<Integer> result = new ArrayList<Integer>();
-  for (int j = 0; j < T.length; ++j)
-    if (T[x][j] == 1) result.add(j);
-  return result;
-}
-  
-  static int GetRandomNextState(int x, int[][] T) { //Getting next random state
-  Random random = new Random();
-  List<Integer> possibleNextStates = GetPossibleNextStates(x, T);
-  int count = possibleNextStates.size();
-  int index = random.nextInt(count);
-  return index;
-}
+                         int max, double[][] rewards, int[][] T, double[][] quality) //Putting it all together
+    {
+        Random random = new Random();
+        for (int e = 0; e < max; ++e) {
+            int currentState = random.nextInt(rewards.length);
+            while (true) {
+                int nextState = GetRandomNextState(currentState, T);
+                List<Integer> possibleNextStates = GetPossibleNextStates(nextState, T);
+                Double minQuality = Double.MIN_VALUE;
+                for (int j = 0; j < possibleNextStates.size(); ++j) {
+                    int pns = possibleNextStates.get(j);
+                    double q = quality[nextState][pns];
+                    if (q > minQuality) minQuality = q;
+                }
+                quality[currentState][nextState] =
+                        ((1 - learnRate) * quality[currentState][nextState]) +
+                                (learnRate * (rewards[currentState][nextState] + (discount * minQuality)));
+                currentState = nextState;
+                if (currentState == goal) break;
+            }
+        }
+    }
+
+    static List<Integer> GetPossibleNextStates(int x, int[][] T) { //Giving possible next States
+        List<Integer> result = new ArrayList<Integer>();
+        for (int j = 0; j < T.length; ++j)
+            if (T[x][j] == 1) result.add(j);
+        return result;
+    }
+
+    static int GetRandomNextState(int x, int[][] T) { //Getting next random state
+        Random random = new Random();
+        List<Integer> possibleNextStates = GetPossibleNextStates(x, T);
+        int count = possibleNextStates.size();
+        int index = random.nextInt(count);
+        return index;
+    }
 /*  static int[][] CreateTrack(int length) {
   int T[][] = new int[length][length];
 for(int rRow = 0; rRow < length; rRow++){
