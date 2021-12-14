@@ -1,0 +1,3 @@
+Gabe: Value iteration (some bug fixing on racetrack problem)
+Brock: Q-learning
+Kyler: Racetrack importation and Racetrack problem implementation
