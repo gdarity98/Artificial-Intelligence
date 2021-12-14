@@ -212,17 +212,7 @@ public class RacingSimulator {
 
                         //transition probability 20% do nothing 80% do something
                         int[] acceleration = new int[2];
-                        boolean accelerationFail = false;
-                        double prob = random.nextDouble();
-                        if(prob <= 0.2){
-                            accelerationFail = true;
-                        }
-                        if(accelerationFail){
-                            acceleration[0] = 0;
-                            acceleration[0] = 0;
-                        }else{
-                            acceleration = actionForState;
-                        }
+                        acceleration = actionForState;
                         racecar.position[0] = state[1];
                         racecar.position[1] = state[0];
                         int[] oldAcceleration = new int[2];
