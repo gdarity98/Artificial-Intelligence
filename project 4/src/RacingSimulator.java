@@ -212,17 +212,7 @@ public class RacingSimulator {
 
                         //transition probability 20% do nothing 80% do something
                         int[] acceleration = new int[2];
-                        boolean accelerationFail = false;
-                        double prob = random.nextDouble();
-                        if (prob <= 0.2) {
-                            accelerationFail = true;
-                        }
-                        if (accelerationFail) {
-                            acceleration[0] = 0;
-                            acceleration[0] = 0;
-                        } else {
-                            acceleration = actionForState;
-                        }
+                        acceleration = actionForState;
                         racecar.position[0] = state[1];
                         racecar.position[1] = state[0];
                         int[] oldAcceleration = new int[2];
@@ -262,7 +252,8 @@ public class RacingSimulator {
         }
         return policy;
     }
-    
+
+    // Model free learning algorithm
     public void ModelFree() {
         Random random = new Random();
         int length = racetrack.length;
@@ -296,8 +287,7 @@ public class RacingSimulator {
 
     }
 
-    static void Training(int goal, double discount, double learnRate,
-                         int max, double[][] rewards, int[][] T, double[][] quality) //Putting it all together
+    static void Training(int goal, double discount, double learnRate, int max, double[][] rewards, int[][] T, double[][] quality) //Putting it all together
     {
         Random random = new Random();
         for (int e = 0; e < max; ++e) {
@@ -309,13 +299,15 @@ public class RacingSimulator {
                 for (int j = 0; j < possibleNextStates.size(); ++j) {
                     int pns = possibleNextStates.get(j);
                     double q = quality[nextState][pns];
-                    if (q > minQuality) minQuality = q;
+                    if (q > minQuality) {
+                        minQuality = q;
+                    }
                 }
-                quality[currentState][nextState] =
-                        ((1 - learnRate) * quality[currentState][nextState]) +
-                                (learnRate * (rewards[currentState][nextState] + (discount * minQuality)));
+                quality[currentState][nextState] = ((1 - learnRate) * quality[currentState][nextState]) + (learnRate * (rewards[currentState][nextState] + (discount * minQuality)));
                 currentState = nextState;
-                if (currentState == goal) break;
+                if (currentState == goal) {
+                    break;
+                }
             }
         }
     }
@@ -323,7 +315,9 @@ public class RacingSimulator {
     static List<Integer> GetPossibleNextStates(int x, int[][] T) { //Giving possible next States
         List<Integer> result = new ArrayList<Integer>();
         for (int j = 0; j < T.length; ++j)
-            if (T[x][j] == 1) result.add(j);
+            if (T[x][j] == 1) {
+                result.add(j);
+            }
         return result;
     }
 
@@ -340,8 +334,8 @@ for(int rRow = 0; rRow < length; rRow++){
             for(int rCol = 0; rCol < length; rCol++){
                T[rCol][rRow] = 1;
             }
-        } 
-  
+        }
+
   return T;
   }
 */
